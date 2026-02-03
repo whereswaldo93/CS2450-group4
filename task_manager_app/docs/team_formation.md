@@ -1,7 +1,7 @@
-### Scrum Master:
-### Developers
-### Tester
-### Meeting Recorder
+##### Scrum Master: Javi
+##### Developers: Seth
+##### Tester: Kyle
+##### Meeting Recorder: Osvaldo
 
 ### Define your communication plan
 
