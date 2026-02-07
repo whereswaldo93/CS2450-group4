@@ -4,7 +4,11 @@
 ### Agenda
 
 1. Clarify role rotation going into milestone 2
-2. Review Milestone 2 and assign tasks leading into next weeks meeting
+   - Scrum Master: Osvaldo
+   - Developers: Javi
+   - Tester: Seth
+   - Meeting Recorder: Kyle
+3. Review Milestone 2 and assign tasks leading into next weeks meeting
    - Refine the backlog, convert features to user stories: Osvaldo
    - Software requirement specifications: Seth
    - UML model: Kyle
