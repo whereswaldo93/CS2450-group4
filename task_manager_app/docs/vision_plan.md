@@ -1,7 +1,7 @@
 ### Vision Statement:
 
 - Describe the “why” of the project.
-    - Organize types of tasks using categories and priorities
+    - This project aims to empower students to take control of their academic workload by transforming overwhelming task lists into clear, actionable steps that support success and well-being.
 
 - Mention target users, pain points, and core value.
      - Students would be the target user
@@ -11,15 +11,18 @@
         - Forgetting Tasks; poorly timed reminders or lack of
         - Friction & Overcomplexity; too many features, steps or tags
         - Lack of Motivation; no sense of progress and checking off tasks doesn't feel rewarding enough to use the app
-     *The core value is to help users reliably remember, priortize, and complete tasks to stay on top of their academic workload.
-  
-- Focusing on college students through the help of task and time management. Intuitive user UI so that the app saves time. 
+    - The core value is to help users reliably remember, priortize, and complete tasks to stay on top of their academic workload.
 
 ### Timeline:
 
-- List major milestones with tentative deadlines.
-
-- Example: “Feature freeze by Week 5, testing phase by Week 7.”
+- Follow the course syllabus schedule;
+    - Milestone 1: Project Initiation and Setup, February 9
+    - Milestone 2: Requirements Engineering and MVP Development. February 23
+    - Milestone 3: System Modeling and Architecture Implementation, March 9
+    - Milestone 4: Advanced Features and Integration, March 30
+    - Milestone 5: Testing and Refactoring, April 6
+    - Project Presentation, April 10
+    - Final Submission, April 21
 
 ### Risks:
 
