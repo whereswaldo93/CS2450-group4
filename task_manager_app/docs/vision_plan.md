@@ -4,6 +4,15 @@
 - Organize types of tasks using categories and priorities
 
 - Mention target users, pain points, and core value.
+     *Students would be the target user
+     *Possible pain points could be:
+        a. Cognitive Overload; long, cluttered lists can seem overwhelming
+        b. Poor Prioritization; everything feels like equal priority, possibly leading users to feel like they don't know what to work on next
+        c. Forgetting Tasks; poorly timed reminders or lack of
+        d. Friction & Overcomplexity; too many features, steps or tags
+        e. Lack of Motivation; no sense of progress and checking off tasks doesn't feel rewarding enough to use the app
+     *The core value is to help users reliably remember, priortize, and complete tasks to stay on top of their academic workload.
+  
 - Focusing on college students through the help of task and time management. Intuitive user UI so that the app saves time. 
 
 ### Timeline:
