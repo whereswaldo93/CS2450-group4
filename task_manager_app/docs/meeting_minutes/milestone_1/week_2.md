@@ -5,5 +5,10 @@
 
 1. Clarify role rotation going into milestone 2
 2. Review Milestone 2 and assign tasks leading into next weeks meeting
-3. Confirm next weeks meeting and if we will want to do scrum meetings. If so, when?
-4. Discuss major launch submission by the due date
+   - Refine the backlog, convert features to user stories: Osvaldo
+   - Software requirement specifications: Seth
+   - UML model: Kyle
+   - Define MVP: Javi
+4. Confirm next weeks meeting and if we will want to do scrum meetings. If so, when?
+   - Continue Saturdays at 3 PM and hold off on scrum meetings for now. 
+6. Discuss major launch submission by the due date
