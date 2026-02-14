@@ -15,15 +15,19 @@
 
 4. **Task status flow**
    - Move tasks between statuses (e.g., To Do, In Progress, Done).
+   - As a to-do list user, I want to group tasks based off their completion status to show task relevancy.
 
 5. **Archive completed tasks**
-   - Archive or hide completed/old tasks without deleting them.
+   - Archive or hide completed tasks without deleting them.
+   - As a to-do list user, I want the option to hide fulfilled tasks while being able to retrieve or view these accomplished tasks for future reflection.
 
 6. **Search tasks**
    - Search tasks by keyword (title and description).
+   - As a to-do list user, I want to be able to filter through and find specific tasks based off keywords to keep search times short. 
 
 7. **Task organization with tags or categories**
    - Add tags/categories to tasks for organization.
+   - As a to-do list user, I want to be able to 
 
 8. **Sort and filter tasks**
    - Sort/filter by due date, priority, status, and tags.
