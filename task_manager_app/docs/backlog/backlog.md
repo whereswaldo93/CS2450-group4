@@ -3,12 +3,15 @@
 ## High Priority
 1. **Create and manage tasks**
    - Create, edit, and delete tasks with a title and description.
+   - As a to-do list user, I want to be able to create, edit, and delete tasks to maintain a custom list of tasks. 
 
 2. **Due dates and deadlines**
    - Add a due date (and optional time) to tasks.
+   - As a to-do list user, I want to assign custom deadlines to tasks to help clarify priority tasks. 
 
 3. **Task priority levels**
    - Mark tasks as High, Medium, or Low priority.
+   - As a to-do list user, I want to assign task tags from a pre-defined set of High, Medium or Low tags to help contribute toward task priority ranking.
 
 4. **Task status flow**
    - Move tasks between statuses (e.g., To Do, In Progress, Done).
