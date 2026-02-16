@@ -2,8 +2,8 @@
 
 ## High Priority
 1. **Create and manage tasks**
-   - Create, edit, and delete tasks with a title and description.
-   - As a to-do list user, I want to be able to create, edit, and delete tasks to maintain a custom list of tasks. 
+   - Feature: Create, edit, and delete tasks with a title and description.
+   - User Story: As a to-do list user, I want to be able to create, edit, and delete tasks to maintain a custom list of tasks. 
 
 2. **Due dates and deadlines**
    - Add a due date (and optional time) to tasks.
@@ -27,17 +27,20 @@
 
 7. **Task organization with tags or categories**
    - Add tags/categories to tasks for organization.
-   - As a to-do list user, I want to be able to 
+   - As a to-do list user, I want to be able to associate tasks with identification tags to help organize and group related tasks.
 
 8. **Sort and filter tasks**
    - Sort/filter by due date, priority, status, and tags.
+   - As a to-do list user, I want to be able to group or organize tasks in a subjective or specific manner to provide multiple to-do list views. 
 
 9. **Responsive layout**
    - Works well on phone and desktop.
+   - As a to-do list user, I want to be able to seamlessly switch between a phone or desktop version of the app to provide multiple modes of access to the software. 
 
 ## Medium Priority
 10. **Subtasks**
    - Add subtasks within a task and show subtask completion progress.
+   - As a to-do list user, I want to be able to create sub-items 
 
 11. **Task notes**
    - Add a notes section to each task.
