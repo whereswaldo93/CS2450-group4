@@ -66,9 +66,11 @@
 ## Low Priority
 16. **Analytics**
    - Show progress summaries (weekly or monthly completion, progress bar).
+   - As a to-do list user, I want to be able to view task summaries to reference how much tasks I have tracked in a given time. 
 
 17. **Dark mode**
    - Toggle light/dark theme.
+   - As a to-do list user, I want to be able to switch between light or dark view modes to increase app readability in different lighting.  
 
 18. **Import and export (CSV)**
    - Export tasks to CSV and import tasks from CSV.
