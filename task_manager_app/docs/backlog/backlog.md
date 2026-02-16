@@ -2,8 +2,8 @@
 
 ## High Priority
 1. **Create and manage tasks**
-   - Feature: Create, edit, and delete tasks with a title and description.
-   - User Story: As a to-do list user, I want to be able to create, edit, and delete tasks to maintain a custom list of tasks. 
+   - Create, edit, and delete tasks with a title and description.
+   - As a to-do list user, I want to be able to create, edit, and delete tasks to maintain a custom list of tasks. 
 
 2. **Due dates and deadlines**
    - Add a due date (and optional time) to tasks.
@@ -40,22 +40,28 @@
 ## Medium Priority
 10. **Subtasks**
    - Add subtasks within a task and show subtask completion progress.
-   - As a to-do list user, I want to be able to create sub-items 
+   - As a to-do list user, I want to be able to manage sub-items to track the overall progress of the parent task. 
 
 11. **Task notes**
    - Add a notes section to each task.
+   - As a to-do list user, I want to be able to create notes attached to specific tasks to help give task descriptions. 
 
 12. **Attach links and files**
    - Attach links and files to tasks.
+   - As a to-do list user, I want to be able to attach links and files to tasks so that I may quickly reference them.
 
 13. **Bulk actions**
    - Select multiple tasks and bulk delete, archive, or change status.
+   - As a to-do list user, I want to be able to select and manage multiple tasks to make mass changes in less time. 
 
 14. **Undo actions**
    - Undo delete, archive, or status changes.
+   - As a to-do list user, I want to be able to undo certain actions such as deleting, archiving and status changes to fix mistakes quickly.
 
 15. **Dashboard / homepage**
    - Show tasks due soon and high-priority tasks at a glance.
+   - As a to-do list user, I want to be able to switch between dashboard views that show due soon or
+   - ***this one seems kind of like the sorting feature, does someone have some clarification if this feature should be treated differently?***
 
 ## Low Priority
 16. **Analytics**
