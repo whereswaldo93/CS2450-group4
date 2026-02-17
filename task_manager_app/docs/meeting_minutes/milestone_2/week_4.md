@@ -1,1 +1,6 @@
 
+Milestone 2, Meeting 2: 02/16/26 Meeting notes Scrum master: Osvaldo Developers: Jake, Javi Tester: Seth Meeting recorder: Kyle
+
+Currently working on: Osvaldo: Finish up backlog stories Javi & Jake: Finish up MVP validation Seth: Finish Software Requirement Specification Kyle: Finished UML Soft release
+
+Meeting on Sunday at 3:00 to do the soft launch.
