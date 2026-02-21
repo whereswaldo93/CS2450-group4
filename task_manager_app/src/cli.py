@@ -172,6 +172,26 @@ def complete_task(
     typer.secho(f"Task #{task_id} was not found.", fg=typer.colors.RED)
     raise typer.Exit(code=1)
 
+@app.command("delete")
+def delete_task(
+    task_id: int = typer.Argument(..., help="Task id to delete.")
+) -> None:
+    tasks = load_tasks()
+
+    for i, task in enumerate(tasks):
+        try:
+            current_id = int(task.get("id"))
+        except (TypeError, ValueError):
+            continue
+
+        if current_id == task_id:
+            del tasks[i]
+            save_tasks(tasks)
+            typer.secho(f"Deleted task #{task_id}.", fg=typer.colors.GREEN)
+            return
+
+    typer.secho(f"Task #{task_id} was not found.", fg=typer.colors.RED)
+    raise typer.Exit(code=1)
 
 if __name__ == "__main__":
     app()
