@@ -74,15 +74,20 @@
 
 18. **Import and export (CSV)**
    - Export tasks to CSV and import tasks from CSV.
+   - As a to-do list user, I want to be able to export tasks to a CSV file and import tasks from CSV a file to have external access to tasks.
 
 19. **Assign members to tasks**
    - Assign a task to a person (basic collaboration fields).
+   - As a to-do list user, I want to be able to assign a task to another user's account to delegate big projects
 
 20. **Team or group task views**
    - Group tasks by team/category and assign tasks within that group.
+   - As a to-do list user, I want to be able to assign a task to a group of user's accounts, create related tasks, and 
 
 21. **Calendar view**
    - View tasks on a calendar based on due dates.
+   - As a to-do list user, I want to be able to
 
 22. **Recurring tasks**
    - Repeat tasks daily, weekly, every X days, or custom patterns.
+   - As a to-do list user, I want to be able to
