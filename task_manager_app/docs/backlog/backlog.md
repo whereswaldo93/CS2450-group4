@@ -58,36 +58,31 @@
    - Undo delete, archive, or status changes.
    - As a to-do list user, I want to be able to undo certain actions such as deleting, archiving and status changes to fix mistakes quickly.
 
-15. **Dashboard / homepage**
-   - Show tasks due soon and high-priority tasks at a glance.
-   - As a to-do list user, I want to be able to switch between dashboard views that show due soon or
-   - ***this one seems kind of like the sorting feature, does someone have some clarification if this feature should be treated differently?***
-
 ## Low Priority
-16. **Analytics**
+15. **Analytics**
    - Show progress summaries (weekly or monthly completion, progress bar).
-   - As a to-do list user, I want to be able to view task summaries to reference how much tasks I have tracked in a given time. 
+   - As a to-do list user, I want to be able to view task summaries based on custom time parameters to reference tracked tasks in a given time.
 
-17. **Dark mode**
+16. **Dark mode**
    - Toggle light/dark theme.
    - As a to-do list user, I want to be able to switch between light or dark view modes to increase app readability in different lighting.  
 
-18. **Import and export (CSV)**
+17. **Import and export (CSV)**
    - Export tasks to CSV and import tasks from CSV.
-   - As a to-do list user, I want to be able to export tasks to a CSV file and import tasks from CSV a file to have external access to tasks.
+   - As a to-do list user, I want to be able to export tasks to a CSV file and import tasks from CSV a file to have a a non-app dependent and additonal method for shareable access to tasks.
 
-19. **Assign members to tasks**
+18. **Assign members to tasks**
    - Assign a task to a person (basic collaboration fields).
    - As a to-do list user, I want to be able to assign a task to another user's account to split up projects
 
-20. **Team or group task views**
+19. **Team or group task views**
    - Group tasks by team/category.
    - As a to-do list user, I want to be able to switch between views based on tasks assigned to more than one user or a group to view a current team's workload. 
 
-21. **Calendar view**
+20. **Calendar view**
    - View tasks on a calendar based on due dates.
    - As a to-do list user, I want to be able to switch between views where a calendar outlines duedates to priortize important tasks first. 
 
-22. **Recurring tasks**
+21. **Recurring tasks**
    - Repeat tasks daily, weekly, every X days, or custom patterns.
    - As a to-do list user, I want to be able to have tasks repeat based off default vaules of daily, weekly or a custom pattern to avoid creating unecessary duplicate tasks.
