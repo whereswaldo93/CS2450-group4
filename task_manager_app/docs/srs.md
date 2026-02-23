@@ -194,6 +194,31 @@ Requirement ID schema and traceability:
 
 ➥ Define UI elements, flows, and standards to be followed (style guides, accessibility guidelines). Include layout constraints, common controls (e.g., help, search), keyboard shortcuts, error/empty-state behavior, and localization. Keep visual designs in a separate UI specification and reference them.
 
+- ID: REQ-INT-001
+- Title: Web-based responsive UI
+- Statement: The website will be able to be used with common web browsers 
+- Rationale: We want anyone to be able to use our website no matter what web browser they use
+- Acceptance Criteria: Website loads on firefox, safari, internet explorer, google chrome
+- Verification Method: Inspection
+- More Information:
+
+- ID: REQ-INT-002
+- Title: Intuitive homepage
+- Statement: The website will have a basic homepage where it is easy to understand what is going on and what everything means
+- Rationale: If people don't understand how the homepage works, they won't be able to get to any other pages
+- Acceptance Criteria: Visually looks nice and every button is simple and intuitive
+- Verification Method: Inspection
+- More Information:
+
+- ID: REQ-INT-003
+- Title: Simple add task page
+- Statement: The website will have an add task page with simple variables that will add tasks to your database
+- Rationale: Having tasks is the whole point of this project, and if we can't add tasks, it defeats the whole point of the website.
+- Acceptance Criteria: Visually looks nice and is simple and understandable
+- Verification Method: Inspection
+- More Information:
+
+
 💡 Tips:
 - Reference accessibility standards (e.g., WCAG) and platform-specific guidelines.
 - Consider organizing into subcategories for clarity: Usability/Accessibility (inputs/outputs and dialogs to fit user abstractions, abilities, and expectations), and Convenience.
@@ -202,13 +227,25 @@ Requirement ID schema and traceability:
 💬 _Details interactions with physical devices and platforms._
 
 ➥ Specify (un)supported device types, data/control signals, electrical or mechanical characteristics if relevant, and communication protocols. Include timing, throughput, and reliability expectations.
-
+- ID: REQ-INT-004
+- Title: Supports desktops/laptops and mobile devices with keyboards or touch input
+- Statement: The website will be able to read input inputted by either a keyboard or mouse and display to both desktops and mobile devices
+- Rationale: We want our website to be convenient; if we don't have our website available on mobile it will be hard to see, add or complete tasks from anywhere outside of the office
+- Acceptance Criteria: Accepts inputs and properly displays to mobile
+- Verification Method: Inspection
+- More Information: 
 💡 Tips:
 - Reference applicable hardware specs and certification requirements.
 
 #### 3.1.3 Software Interfaces
 💬 _Defines integrations with other software components and services._
-
+- ID: REQ-INT-005
+- Title: Saving data to be able to reload if the website ever crashes.
+- Statement: The website will save data to a database, making it so that it will be able to load the data from the previous time opened
+- Rationale: We don't want tasks to disappear randomly
+- Acceptance Criteria: Saves data and is able to load data on start up
+- Verification Method: Test | Inspection
+- More Information:
 ➥ List connected systems (name and version), required or provided services/APIs, data items/messages exchanged, communication styles/protocols, and limit/error/timeout semantics. Identify shared data and ownership.
 
 💡 Tips:
@@ -220,6 +257,61 @@ Requirement ID schema and traceability:
 
 ➥ Organize functional requirements by feature, use case, or service. For each, describe triggers/inputs, processing/logic (at a black-box level), outputs, and error conditions. For AI behaviors, define determinism bounds (e.g., temperature), refusal criteria, safety rules, and human review points.
 
+- ID: REQ-FUNC-001
+- Title: Loads tasks that were added based on the user who logs in
+- Statement: The website will load the proper tasks based on the user that is logged in
+- Rationale: We need to display the right tasks for the proper user.
+- Acceptance Criteria: Loads different data based off of different users
+- Verification Method: Test
+- More Information:
+
+- ID: REQ-FUNC-002
+- Title: Create task
+- Statement: The website will be able to create new tasks with all of the required requirements for a task.
+- Rationale: We need tasks to be able to populate our website
+- Acceptance Criteria: tasks are created and added to our database
+- Verification Method: Test
+- More Information:
+
+- ID: REQ-FUNC-003
+- Title: Edit tasks
+- Statement: Once a task is created, you will be able to edit it to change any and all variables on the task.
+- Rationale: Sometimes the task changes. We want to be able to change the info so that it matches what is actually needed.
+- Acceptance Criteria: Once a task is changed, it will have different variables
+- Verification Method: Test
+- More Information:
+
+- ID: REQ-FUNC-004
+- Title: filter display
+- Statement: The website can be filtered based on variables in the tasks. 
+- Rationale: We want to be able to simplify our tasks so that it is a little simpler and easier to see specific tasks
+- Acceptance Criteria: Changes the display of tasks
+- Verification Method: Inspection
+- More Information:
+
+- ID: REQ-FUNC-005
+- Title: Sort display
+- Statement: The Website will be able to sort and display the tasks based on certain varaibles
+- Rationale: This will help make it easier to decide what task you need to work on
+- Acceptance Criteria: Changes the order of the tasks that are displayed.
+- Verification Method: Inspection
+- More Information:
+
+- ID: REQ-FUNC-006
+- Title: Mark task complete
+- Statement: The website will be able to mark a task as completed, and will then hide the task unless prompted to show completed tasks.
+- Rationale: Once a task is done we need to be able to mark it as completed
+- Acceptance Criteria: Checks that it is completed and then hides
+- Verification Method: Test | Inspection
+- More Information:
+
+- ID: REQ-FUNC-007
+- Title: Delete task
+- Statement: The website will be able to remove tasks
+- Rationale: Sometimes tasks don't get finished but are no longer needed
+- Acceptance Criteria: Task is removed from the database
+- Verification Method: Test | Inspection
+- More Information:
 💡 Tips:
 - Include edge cases and negative scenarios for completeness.
 - For AI features, include fallback behaviors and thresholds for abstention.
@@ -235,6 +327,13 @@ Requirement ID schema and traceability:
 
 #### 3.3.1 Performance
 💬 _Response time, throughput, and resource usage expectations._
+- ID: REQ-PERF-001
+- Title: Website loads fast
+- Statement: The website will load in a timely manner(< 15 Seconds)
+- Rationale: We don't want our task manager website to take too much time to load
+- Acceptance Criteria: Loads quickly enough
+- Verification Method: Test | Inspection
+- More Information:
 
 ➥ Specify timing relationships, peak/steady-state loads, and performance targets under expected conditions. Include measurement methods, environments, and acceptance thresholds. Note any real-time constraints.
 
@@ -244,7 +343,21 @@ Requirement ID schema and traceability:
 
 #### 3.3.2 Security
 💬 _Defines the protection of data, identities, and operations._
+- ID: REQ-SEC-001
+- Title: The passwords are secure
+- Statement: The passwords will either be hashed or outsourced to a to a service that securely stores passwords
+- Rationale: We don't want our clients passwords to be leaked
+- Acceptance Criteria: Passwords are hashed
+- Verification Method: Inspection
+- More Information:
 
+- ID: REQ-SEC-002
+- Title: Task privacy
+- Statement: The website will make sure that you are only able to view and edit tasks that you are supposed to be able to
+- Rationale: We want people to view other people's tasks
+- Acceptance Criteria: Can only see tasks for which you have permissions.
+- Verification Method: Inspection
+- More Information:
 ➥ Define authentication, authorization, data protection (in transit/at rest), auditing, and privacy requirements. Address abuse/misuse and external attacks (e.g., injection, data exfiltration, or service compromise), and include secure defaults and incident response requirements.
 
 💡 Tips:
@@ -259,21 +372,39 @@ Place generic security controls here (3.3.2), and cross-reference from supported
 
 #### 3.3.3 Reliability
 💬 _Ability to consistently perform as specified._
-
+- ID: REQ-REL-001
+- Title: Data is saved
+- Statement: The website will save data to our database, so that in case of a crash, it will be able to load previous tasks.
+- Rationale: We want to be able to have all of the previous tasks reload if the service is ever shut down.
+- Acceptance Criteria: On server shutdown, the tasks can be reloaded after
+- Verification Method: Inspection
+- More Information:
 ➥ Specify reliability metrics and techniques (e.g., MTBF, error budgets, retry/backoff, idempotency, redundancy). Define conditions under which reliability is assessed and any failover behaviors. Define graceful degradation (e.g., fallback components, cached results, AI/ML deterministic heuristics), timeout/abstain policies, and rollback to previous versions.
 
 #### 3.3.4 Availability
 💬 _System uptime and readiness to deliver service._
 
 ➥ Define availability targets, maintenance windows, and mechanisms like checkpointing, recovery, and restart. Include geographical/zone redundancy if applicable.
-
+- ID: REQ-AVAIL-001
+- Title: The server will have an uptime of 90%
+- Statement: The website will be available 90% of the time while we are testing it.
+- Rationale: We want our clients to be able to use our website at almost anytime of the day
+- Acceptance Criteria: Measured monthly, the website is available 90%
+- Verification Method: Inspection
+- More Information:
 💡 Tips:
 - Express availability in terms meaningful to users (e.g., downtime per month) and tie to SLAs/SLOs.
 - Capture scale-out/in behavior affecting availability (e.g., max failover time, quorum constraints).
 
 #### 3.3.5 Observability
 💬 _Ability to understand system state and behavior in production through telemetry._
-
+- ID: REQ-OBS-001
+- Title: Error handling
+- Statement: The website will be able to give out errors when stuff goes wrong
+- Rationale: We want to have errors in case anything goes wrong.
+- Acceptance Criteria: If anything crashes, it gives an error.
+- Verification Method: Inspection
+- More Information:
 ➥ Define requirements for logs, metrics, traces, and profiling: events/fields, cardinality limits, sampling, retention, and privacy/PII handling in telemetry. Specify standard labels (e.g., service, version, tenant), correlation/trace IDs propagation, and redaction policies. State SLO-aligned alert rules, dashboards, and ownership.
 
 💡 Tips:
