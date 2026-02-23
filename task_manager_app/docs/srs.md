@@ -111,9 +111,14 @@ The To-Do List System is designed to provide a centralized, web-based task manag
 - A high-level context diagram may help to orient the reader.
 
 ### 2.2 Product Functions
-💬 _High-level summary of what the product enables users or systems to do._
+The Task Manager is designed to organize, track, and manage tasks based on the following areas.
+-Task creation: Users can create new tasks with a title, description, due date, and priority level.
+-Task options: Users can delete, read, update, and complete tasks.
+- Advanced options: Users can perform bulk actions, undo actions, add notes and files, and oragnize tasks/subtasks by several categories.
+- Dashboard: Users can access a homepage displaying urgent tasks, visual analytics, and task completion.
+- Data portability: CSV files can be imported and exported to populate data or keep a copy.
 
-➥ Provide a concise overview of the major functional areas/features. Defer detailed behaviors, data, and edge cases to Section 3.
+[UML Diagram](UML.pdf)
 
 💡 Tips:
 - 5–10 bullets are often sufficient at this level, grouping related functions logically.
