@@ -120,7 +120,10 @@ The To-Do List System is designed to provide a centralized, web-based task manag
 - Include a top-level data flow or use case diagram if helpful.
 
 ### 2.3 Product Constraints
-💬 _Defines contextual limitations or conditions shaping design and implementation._
+- The MVP must operate on a Python CLI using data from the local file tasks.json.
+- To support collaboration functions across devices, local JSON storage must migrate to a central database.
+- The system should restrict file size (including attachments) to 10MB to control database management and high transfer speeds.
+- The UI must implement standard web design principles to be utilized across multiple browsers and screen sizes.
 
 ➥ Describe constraints such as mandated interfaces, technology stacks, regulatory obligations, QoS baselines, hardware limitations, AI/ML model families, and organizational policies.
 
@@ -142,12 +145,12 @@ Requirements (Section 3) defines verifiable system obligations—specific behavi
 - Note localization and accessibility considerations that affect UI/UX requirements.
 
 ### 2.5 Assumptions and Dependencies
-💬 _External assumed factors or conditions, as opposed to known facts, that the project relies on._
+#### 2.5.1 Assumptions
+Users will import tasks via a CSV file formatted to the standardized template of the application.
+Time sensitive analytics like due dates and progress bars assume the users date and time settings are accurate.
 
-➥ List assumptions about environment, hardware, usage patterns, third-party components/services, and organizational support. List dependencies on external systems, libraries, or teams. For each, indicate potential impact if proven false.
-
-💡 Tips:
-- Link assumptions to risk register with owner and mitigation when available.
+### 2.5.2 Dependencies
+For the MVP, the application depends on local file permissions to tasks.json.
 
 ### 2.6 Apportioning of Requirements
 💬 _Allocation of requirements across components or increments._
