@@ -97,7 +97,9 @@ A more detailed explanation of the document structure is provided in Section 1.5
 - Keep to 3–5 sentences focusing on navigation and conventions.
 
 ## 2. Product Overview
-💬 _Provides background and context influencing the product’s requirements._
+College students frequently manage assignments across multiple platforms, including learning management systems, email, physical planners, and messaging applications. This fragmentation increases the risk of missed deadlines and academic stress.
+
+The To-Do List System is designed to provide a centralized, web-based task management platform that consolidates academic and personal responsibilities into a single focus point. The system’s requirements are influenced by the high workload variability in academic environments, limited student time, and the need for mobile accessibility.
 
 ### 2.1 Product Perspective
 💬 _Places the product within a larger ecosystem or lineage._
