@@ -1,12 +1,16 @@
 import json
+from json.decoder import JSONDecodeError
 from config import DATA_FILE
 
 def load_tasks() -> list[dict]:
     if not DATA_FILE.exists() or DATA_FILE.stat().st_size == 0:
         return []
 
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except JSONDecodeError:
+        return []
 
     if not isinstance(data, list):
         raise ValueError(f"Invalid task file format in {DATA_FILE}. Expected a JSON array.")
