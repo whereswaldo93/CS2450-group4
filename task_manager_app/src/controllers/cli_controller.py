@@ -24,7 +24,7 @@ def add_task(
 
 @app.command("list")
 def list_tasks() -> None:
-    tasks = task_controller.list_task()
+    tasks = task_controller.list_tasks()
     cli_view.print_tasks_table(tasks)
 
 @app.command("complete")
