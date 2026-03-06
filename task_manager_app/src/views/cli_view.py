@@ -15,7 +15,7 @@ def print_tasks_table(tasks: list[dict]) -> None:
         return
 
     columns = [
-        ("ID", lambda t: str(t.get("id", ""))),
+        ("ID", lambda t: str(t.get("id", t.get("task_id", "")))),
         ("Title", lambda t: t.get("title", "")),
         ("Status", lambda t: t.get("status", "")),
         ("Due", lambda t: t.get("due_date", "") or ""),
