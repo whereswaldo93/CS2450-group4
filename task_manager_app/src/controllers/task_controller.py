@@ -1,4 +1,8 @@
-from  models import task_manager
+from  models.task_manager import TaskManager
+from utils.file_handler import TaskFileRepo
+from config import DATA_FILE
+
+task_manager = TaskManager(TaskFileRepo(DATA_FILE))  # Initialize TaskManager with a repository
 
 def add_task(title, description, due_date, priority):
     return task_manager.add_task(title, description, due_date, priority)
