@@ -1,6 +1,7 @@
 from config import ALLOWED_PRIORITIES
-from models.task import create_task
+from models.task import Task
 from datetime import datetime
+
 
 class TaskManager:
     def __init__(self, repo):
@@ -25,10 +26,9 @@ class TaskManager:
 
     def next_task_id(self, tasks: list[dict]) -> int:
         ids = []
-        
         for task in tasks:
             try:
-                ids.append(int(task.get("id", 0)))
+                ids.append(int(task.get("task_id", task.get("id", 0))))
             except (TypeError, ValueError):
                 continue
         return (max(ids) if ids else 0) + 1
@@ -39,35 +39,46 @@ class TaskManager:
         normalized_title = title.strip()
         if not normalized_title:
             raise ValueError("Title cannot be empty")
-        
-        task = create_task(
-            task_id = self.next_task_id(tasks),
-            title = normalized_title,
-            description = description,
-            priority = self.normalize_priority(priority),
-            due_date = self.validate_due_date(due_date)
+
+        task = Task(
+            task_id=self.next_task_id(tasks),
+            title=normalized_title,
+            description=description,
+            priority=self.normalize_priority(priority),
+            due_date=self.validate_due_date(due_date),
         )
 
-        tasks.append(task)
+        tasks.append(task.__dict__)
         self.repo.save_tasks(tasks)
-        return task
+        return task.__dict__
 
     def list_tasks(self):
         return self.repo.load_tasks()
+
+    def get_task(self, task_id: int):
+        tasks = self.repo.load_tasks()
+        for task in tasks:
+            try:
+                current_id = int(task.get("id", task.get("task_id")))
+            except (TypeError, ValueError):
+                continue
+            if current_id == task_id:
+                return task
+        return None
 
     def complete_task(self, task_id: int):
         tasks = self.repo.load_tasks()
 
         for task in tasks:
             try:
-                current_id = int(task.get("id"))
+                current_id = int(task.get("id", task.get("task_id")))
             except (TypeError, ValueError):
                 continue
 
             if current_id == task_id:
                 if task.get("status") == "Complete":
                     return "already_complete"
-                
+
                 task["status"] = "Complete"
                 task["updated_at"] = datetime.now().isoformat(timespec="seconds")
                 self.repo.save_tasks(tasks)
@@ -79,7 +90,7 @@ class TaskManager:
 
         for i, task in enumerate(tasks):
             try:
-                current_id = int(task.get("id"))
+                current_id = int(task.get("id", task.get("task_id")))
             except (TypeError, ValueError):
                 continue
 
@@ -87,5 +98,5 @@ class TaskManager:
                 del tasks[i]
                 self.repo.save_tasks(tasks)
                 return True
-            
+
         return False

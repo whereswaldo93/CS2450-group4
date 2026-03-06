@@ -17,7 +17,7 @@ def add_task(
     
     try:
         task = task_controller.add_task(title, description, due_date, priority)
-        cli_view.success(f"Added task #{task['id']}: {task['title']}")
+        cli_view.success(f"Added task #{task.task_id}: {task.title}")
     except ValueError as e:
         cli_view.error(str(e))
         raise typer.Exit(code=1)
