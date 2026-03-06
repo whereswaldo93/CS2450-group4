@@ -1,14 +1,15 @@
 import json
 from json import JSONDecodeError
 from pathlib import Path
-from config import DATA_FILE
+from models.task import Task
+
 
 
 class TaskFileRepo:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path) -> None:
         self.path = path
 
-    def load_tasks(self) -> list[dict]:
+    def load_tasks(self) -> list[Task]:
         if not self.path.exists() or self.path.stat().st_size == 0:
             return []
 
@@ -22,10 +23,10 @@ class TaskFileRepo:
             raise ValueError(
                 f"Expected a list of tasks in {self.path}, but got {type(data).__name__}"
             )
+            
+        return [Task.from_dict(item) for item in data]
 
-        return data
-
-    def save_tasks(self, tasks: list[dict]) -> None:
+    def save_tasks(self, tasks: list[Task]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with open(self.path, "w", encoding="utf-8") as f:
-            json.dump(tasks, f, indent=2)
+            json.dump([task.to_dict() for task in tasks], f, indent=2)
