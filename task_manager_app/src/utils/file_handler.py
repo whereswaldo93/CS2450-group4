@@ -2,6 +2,7 @@ import json
 from json.decoder import JSONDecodeError
 from config import DATA_FILE
 
+
 def load_tasks() -> list[dict]:
     if not DATA_FILE.exists() or DATA_FILE.stat().st_size == 0:
         return []
@@ -13,9 +14,12 @@ def load_tasks() -> list[dict]:
         return []
 
     if not isinstance(data, list):
-        raise ValueError(f"Invalid task file format in {DATA_FILE}. Expected a JSON array.")
+        raise ValueError(
+            f"Invalid task file format in {DATA_FILE}. Expected a JSON array."
+        )
 
     return data
+
 
 def save_tasks(tasks: list[dict]) -> None:
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
