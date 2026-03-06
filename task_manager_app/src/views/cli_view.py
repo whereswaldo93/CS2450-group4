@@ -1,25 +1,27 @@
 import typer
+from models.task import Task
 
-def success(message: str):
+def success(message: str) -> None:
     typer.secho(message, fg=typer.colors.GREEN)
 
-def error(message: str):
+def error(message: str) -> None:
     typer.secho(message, fg=typer.colors.RED)
 
-def info(message: str):
+def info(message: str) -> None:
     typer.secho(message)    
 
-def print_tasks_table(tasks: list[dict]) -> None:
+def print_tasks_table(tasks: list[Task]) -> None:
     if not tasks:
         typer.echo("\n(No tasks found)\n")
         return
 
     columns = [
-        ("ID", lambda t: str(t.get("id", t.get("task_id", "")))),
-        ("Title", lambda t: t.get("title", "")),
-        ("Status", lambda t: t.get("status", "")),
-        ("Due", lambda t: t.get("due_date", "") or ""),
-        ("Priority", lambda t: t.get("priority", "") or ""),
+        ("ID", lambda t: str(t.task_id)),
+        ("Title", lambda t: t.title),
+        ("Description", lambda t: t.description or ""),
+        ("Status", lambda t: t.status.value or ""),
+        ("Due Date", lambda t: t.due_date or ""),
+        ("Priority", lambda t: t.priority.value or ""),
     ]
 
     widths = []

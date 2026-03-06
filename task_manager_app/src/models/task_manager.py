@@ -1,10 +1,15 @@
-from config import ALLOWED_PRIORITIES
-from models.task import Task
+from models.task import Task, TaskPriority, TaskStatus
 from datetime import datetime
+from typing import Protocol
 
+class TaskRepo(Protocol):
+    def load_tasks(self) -> list[Task]: 
+        ...
+    def save_tasks(self, tasks: list[Task]) -> None: 
+        ...
 
 class TaskManager:
-    def __init__(self, repo):
+    def __init__(self, repo: TaskRepo) -> None:
         self.repo = repo
 
     def validate_due_date(self, due_date: str | None) -> str | None:
@@ -13,27 +18,27 @@ class TaskManager:
 
         try:
             datetime.strptime(due_date, "%Y-%m-%d")
-        except ValueError:
+        except ValueError as e:
             raise ValueError("Invalid due date format. Use YYYY-MM-DD.")
 
         return due_date
-
-    def normalize_priority(self, priority: str) -> str:
-        key = priority.strip().lower()
-        if key not in ALLOWED_PRIORITIES:
-            raise ValueError("Invalid priority. Choose one of: Low, Medium, High.")
-        return ALLOWED_PRIORITIES[key]
-
-    def next_task_id(self, tasks: list[dict]) -> int:
-        ids = []
-        for task in tasks:
-            try:
-                ids.append(int(task.get("task_id", task.get("id", 0))))
-            except (TypeError, ValueError):
-                continue
-        return (max(ids) if ids else 0) + 1
-
-    def add_task(self, title, description, due_date, priority):
+    
+    def next_task_id(self, tasks: list[Task]) -> int:
+        return (max(task.task_id for task in tasks) if tasks else 0) + 1
+    
+    def _find_task_index(self, tasks: list[Task], task_id: int) -> int | None:
+        for i, task in enumerate(tasks):
+            if task.task_id == task_id:
+                return i
+        return None
+    
+    def add_task(
+        self, 
+        title: str, 
+        description: str, 
+        due_date: str | None, 
+        priority: str
+    ) -> Task:
         tasks = self.repo.load_tasks()
 
         normalized_title = title.strip()
@@ -43,60 +48,47 @@ class TaskManager:
         task = Task(
             task_id=self.next_task_id(tasks),
             title=normalized_title,
-            description=description,
-            priority=self.normalize_priority(priority),
+            description=description.strip(),
+            priority=TaskPriority.from_value(priority),
             due_date=self.validate_due_date(due_date),
         )
 
-        tasks.append(task.__dict__)
+        tasks.append(task)
         self.repo.save_tasks(tasks)
-        return task.__dict__
 
-    def list_tasks(self):
+        return task
+
+    def list_tasks(self) -> list[Task]:
         return self.repo.load_tasks()
 
-    def get_task(self, task_id: int):
+    def get_task(self, task_id: int) -> Task | None:
         tasks = self.repo.load_tasks()
-        for task in tasks:
-            try:
-                current_id = int(task.get("id", task.get("task_id")))
-            except (TypeError, ValueError):
-                continue
-            if current_id == task_id:
-                return task
-        return None
+        index = self._find_task_index(tasks, task_id)
+        return None if index is None else tasks[index]
 
-    def complete_task(self, task_id: int):
+    def complete_task(self, task_id: int) -> str:
         tasks = self.repo.load_tasks()
+        index = self._find_task_index(tasks, task_id)
 
-        for task in tasks:
-            try:
-                current_id = int(task.get("id", task.get("task_id")))
-            except (TypeError, ValueError):
-                continue
+        if index is None:
+            return "not_found"
 
-            if current_id == task_id:
-                if task.get("status") == "Complete":
-                    return "already_complete"
+        task = tasks[index]
+        if task.status == TaskStatus.COMPLETED:
+            return "already_complete"
 
-                task["status"] = "Complete"
-                task["updated_at"] = datetime.now().isoformat(timespec="seconds")
-                self.repo.save_tasks(tasks)
-                return "completed"
-        return "not_found"
+        task.status = TaskStatus.COMPLETED
+        self.repo.save_tasks(tasks)
 
-    def delete_task(self, task_id: int):
+        return "completed"
+
+    def delete_task(self, task_id: int) -> bool:
         tasks = self.repo.load_tasks()
+        index = self._find_task_index(tasks, task_id)
 
-        for i, task in enumerate(tasks):
-            try:
-                current_id = int(task.get("id", task.get("task_id")))
-            except (TypeError, ValueError):
-                continue
+        if index is None:
+            return False
 
-            if current_id == task_id:
-                del tasks[i]
-                self.repo.save_tasks(tasks)
-                return True
-
-        return False
+        del tasks[index]
+        self.repo.save_tasks(tasks)
+        return True
