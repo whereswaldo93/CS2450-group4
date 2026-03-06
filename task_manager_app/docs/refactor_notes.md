@@ -14,3 +14,11 @@
   <li>GUI integration has not been started yet either and will be focused on during this second week of the project milestone.</li>
   <li>I pushed all changes today and will notify Jake so he may begin some testing.</li>
 </ol>
+
+#### Date modified: 03/05/2026
+<ol>
+  <li>We refactored the project to better follow SOLID principles and improve separation of concerns without changing functionality.</li>
+  <li>File persistence was moved to a TaskFileRepository in file_handler.py, giving it a single responsibility for loading and saving tasks.</li> 
+  <li>The TaskManager now handles only task-related business logic and receives the repository as a dependency instead of accessing file operations directly.</li> 
+  <li>The task_controller was updated to create and use the TaskManager, coordinating between the CLI and the model.</li>
+</ol>
