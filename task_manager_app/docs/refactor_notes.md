@@ -22,3 +22,11 @@
   <li>The TaskManager now handles only task-related business logic and receives the repository as a dependency instead of accessing file operations directly.</li> 
   <li>The task_controller was updated to create and use the TaskManager, coordinating between the CLI and the model.</li>
 </ol>
+
+#### Date modified: 03/07/2026
+<ol>
+  <li>Added a Tkinter GUI, replacing the command-line interface with a graphical interface that allows users to manage tasks through windows, buttons, and input fields instead of typed commands.</li>
+  <li>The GUI was integrated without changing the underlying business logic, because it communicates with the existing TaskController and TaskManager layers.</li> 
+  <li>A new branch was created and used while implementing the GUI, once changes were finalized I, Osvaldo, merged to the main branch</li> 
+  <li>I will alert Jake for testing.</li>
+</ol>
