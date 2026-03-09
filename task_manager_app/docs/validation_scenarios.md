@@ -46,11 +46,21 @@
 * **Expected Result:** The task instantly disappears from the Treeview. The `tasks.json` file no longer contains the JSON object for that task.
 * **Actual Result:** Passed.
 
-## Scenario 5: SOLID Benefit (CLI vs. GUI)
-**Objective:** Demonstrate that the `TaskManager` and `Task` models can be used by entirely different interfaces without any modification to the models themselves (Single Responsibility & Open/Closed Principles).
+## Scenario 5: SOLID Benefits - Single Responsibility Principle
+**Objective:** Verify that the application layers are strictly separated. Modifying the underlying data source directly should seamlessly reflect in the View upon request, proving the View and Controller are completely decoupled from data persistence mechanics.
 * **Steps:**
-    1. Open the terminal and use the Typer CLI to add a task: `python cli_controller.py add "CLI Task" -d "Added from terminal" -p High`.
-    2. Keep the GUI window open (or open it if closed) and click the "Refresh" button.
-* **Expected Result:** The task added via the command line immediately appears in the Tkinter GUI.
-* **Actual Result:** Passed. 
-* **Observations:** Because `cli_controller` and `gui_controller` both route to `TaskController` and read from the same `TaskFileRepo`, the business logic remains strictly isolated from the presentation layer.
+    1. Launch the GUI application and observe the current list of tasks.
+    2. Outside of the application, open the `tasks.json` data file in a text editor.
+    3. Manually edit the `"title"` or `"description"` of an existing task and save the file.
+    4. Return to the GUI application and click the "Refresh" button.
+* **Expected Result:** The GUI immediately updates the Treeview to reflect the manual changes made to the JSON file without needing a restart.
+* **Actual Result:** Passed.
+* **Observations:** This demonstrates SRP. The `GUIView` is strictly responsible for rendering, `TaskFileRepo` strictly handles file I/O, and `GUIController` bridges them. Because of this separation, external changes to the data state are handled gracefully.
+
+<img width="720" height="120" alt="image" src="https://github.com/user-attachments/assets/04fe30bb-7aa1-408c-8a2c-8354aa4abbad" />
+<img width="619" height="399" alt="image" src="https://github.com/user-attachments/assets/5ecdc150-6ca6-45a3-a549-e0dea0d4c1c2" />
+<img width="775" height="365" alt="image" src="https://github.com/user-attachments/assets/c9db03a1-3976-42a0-b651-c8ed2a90ce9d" />
+<img width="770" height="332" alt="image" src="https://github.com/user-attachments/assets/58ffc95c-9577-48c1-9d8f-1e7433f94b4c" />
+<img width="406" height="263" alt="image" src="https://github.com/user-attachments/assets/25507eaa-76db-49dc-92f3-5bdbdc61cccf" />
+<img width="783" height="323" alt="image" src="https://github.com/user-attachments/assets/e66c2228-3505-4e35-a2d5-2ea67f58fe3d" />
+
