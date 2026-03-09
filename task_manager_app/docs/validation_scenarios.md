@@ -5,7 +5,7 @@
 
 ---
 
-## Scenario 1: GUI Interaction - Add a Task (Happy Path)
+## Scenario 1: GUI Interaction - Add a Task
 **Objective:** Verify that a user can successfully add a task through the Tkinter GUI and see it rendered in the Treeview.
 * **Steps:**
     1. Launch the application via `python main.py`.
@@ -19,7 +19,7 @@
 * **Observations:** The `refresh_tasks` method correctly pulled the new data from the `GUIController`.
 * *[Screenshot placeholder: GUI showing the populated input fields and the resulting Treeview row]*
 
-## Scenario 2: GUI Interaction - Add a Task with Invalid Date (Error Handling)
+## Scenario 2: GUI Interaction - Add a Task with Invalid Date
 **Objective:** Validate that business logic errors in the Model are correctly caught and displayed by the View.
 * **Steps:**
     1. Enter "Invalid Date Task" in the Title field.
@@ -50,7 +50,7 @@
 * **Actual Result:** Passed.
 * *[Screenshot placeholder: Empty GUI Treeview next to an empty JSON array in a code editor]*
 
-## Scenario 5: SOLID Benefit - Shared Business Logic (CLI vs. GUI)
+## Scenario 5: SOLID Benefit (CLI vs. GUI)
 **Objective:** Demonstrate that the `TaskManager` and `Task` models can be used by entirely different interfaces without any modification to the models themselves (Single Responsibility & Open/Closed Principles).
 * **Steps:**
     1. Open the terminal and use the Typer CLI to add a task: `python cli_controller.py add "CLI Task" -d "Added from terminal" -p High`.
