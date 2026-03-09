@@ -1,9 +1,12 @@
+import sys
+import os
 import unittest
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 from models.task import Task, TaskPriority, TaskStatus
 from models.task_manager import TaskManager
 
 class MockRepo:
-    """An in-memory repository to test TaskManager without touching the disk."""
     def __init__(self):
         self.tasks = []
 
