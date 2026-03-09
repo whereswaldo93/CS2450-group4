@@ -17,7 +17,6 @@
 * **Expected Result:** The status label updates to "Task #1: Write Unit Tests added successfully." The inputs clear, and the new task appears as a row in the Treeview table.
 * **Actual Result:** Passed. Task appeared in Treeview and saved to JSON.
 * **Observations:** The `refresh_tasks` method correctly pulled the new data from the `GUIController`.
-* *[Screenshot placeholder: GUI showing the populated input fields and the resulting Treeview row]*
 
 ## Scenario 2: GUI Interaction - Add a Task with Invalid Date
 **Objective:** Validate that business logic errors in the Model are correctly caught and displayed by the View.
@@ -27,7 +26,6 @@
     3. Click "Add Task".
 * **Expected Result:** A Tkinter `messagebox.showerror` pops up displaying: "Invalid due date format. Use YYYY-MM-DD." The task is not added to the Treeview.
 * **Actual Result:** Passed. The error correctly bubbled up from `TaskManager.validate_due_date` to `gui_view.add_task`.
-* *[Screenshot placeholder: Tkinter error message box over the main window]*
 
 ## Scenario 3: MVC Flow - Mark Task as Complete
 **Objective:** Confirm that selecting a task in the UI correctly updates the underlying model state and refreshes the display.
@@ -37,7 +35,6 @@
 * **Expected Result:** A success messagebox appears. The Treeview refreshes, and the "Status" column for that task changes from "Pending" to "Completed". 
 * **Actual Result:** Passed.
 * **Observations:** The controller correctly mapped the UI `task_id` to the model's `complete_task` method. 
-* *[Screenshot placeholder: Treeview showing the task with a "Completed" status]*
 
 ## Scenario 4: MVC Flow - Delete a Task
 **Objective:** Verify the delete operation removes the task from both the UI and the persistent JSON storage.
@@ -48,7 +45,6 @@
     4. Open the `tasks.json` file in a text editor.
 * **Expected Result:** The task instantly disappears from the Treeview. The `tasks.json` file no longer contains the JSON object for that task.
 * **Actual Result:** Passed.
-* *[Screenshot placeholder: Empty GUI Treeview next to an empty JSON array in a code editor]*
 
 ## Scenario 5: SOLID Benefit (CLI vs. GUI)
 **Objective:** Demonstrate that the `TaskManager` and `Task` models can be used by entirely different interfaces without any modification to the models themselves (Single Responsibility & Open/Closed Principles).
