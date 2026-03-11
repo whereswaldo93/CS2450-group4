@@ -1,0 +1,10 @@
+# Task Manager App – dependencies to run the code
+
+# Django web app (taskproject)
+Django>=5.0,<6.1
+
+# Django REST framework (used in INSTALLED_APPS)
+djangorestframework>=3.14,<4.0
+
+# CLI (run from task_manager_app/src: python cli.py)
+typer[all]>=0.9.0
