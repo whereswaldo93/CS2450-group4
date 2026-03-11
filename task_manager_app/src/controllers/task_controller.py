@@ -1,22 +1,16 @@
 from models.task_manager import TaskManager
 from models.task import Task
 
+
 class TaskController:
     def __init__(self, task_manager: TaskManager) -> None:
         self.task_manager = task_manager
 
     def add_task(
-        self, 
-        title: str, 
-        description: str, 
-        due_date: str | None, 
-        priority: str
+        self, title: str, description: str, due_date: str | None, priority: str
     ) -> Task:
         return self.task_manager.add_task(
-            title=title,   
-            description=description,
-            due_date=due_date,
-            priority=priority
+            title=title, description=description, due_date=due_date, priority=priority
         )
 
     def list_tasks(self) -> list[Task]:
