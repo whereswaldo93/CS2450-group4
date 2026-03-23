@@ -10,7 +10,7 @@ Is it necessary, or would a basic implementation work? Again as it stands, our b
 
 Implementation Pseudocode:
 
-'''
+'''python
 from typing import Protocol
 from models.task import Task
 
@@ -42,7 +42,7 @@ Is it necessary, or would a basic implementation work? If marking a task "done" 
 
 Implementation Pseudocode: 
 
-'''
+'''python
 class TaskObserver(Protocol):
     def update(self, task: Task, event_type: str) -> None: ...
 
@@ -82,7 +82,7 @@ A basic implementation will work for a single filter, such as the priority of a 
 
 Implementation pseudocode:
 
-'''
+'''python
 from typing import Protocol
 
 class TaskSpecification(Protocol):
