@@ -10,7 +10,7 @@ Is it necessary, or would a basic implementation work? Again as it stands, our b
 
 Implementation Pseudocode:
 
-'''python
+```python
 from typing import Protocol
 from models.task import Task
 
@@ -30,7 +30,7 @@ class EditTaskCommand:
 
     def undo(self) -> None:
         self.task.title = self.previous_data["title"]
-'''
+```
 
 2. Mark "Done" on Tasks
 
@@ -42,7 +42,7 @@ Is it necessary, or would a basic implementation work? If marking a task "done" 
 
 Implementation Pseudocode: 
 
-'''python
+```python
 class TaskObserver(Protocol):
     def update(self, task: Task, event_type: str) -> None: ...
 
@@ -69,7 +69,7 @@ class AnalyticsTracker:
     def update(self, task: Task, event_type: str):
         if event_type == "COMPLETED":
             print(f"Analytics: Incrementing completed count for user.")
-'''
+```
 
 3. Filtering Task
 
@@ -82,7 +82,7 @@ A basic implementation will work for a single filter, such as the priority of a 
 
 Implementation pseudocode:
 
-'''python
+```python
 from typing import Protocol
 
 class TaskSpecification(Protocol):
@@ -114,4 +114,4 @@ class TaskManager:
     # ...
     def filter_tasks(self, spec: TaskSpecification) -> list[Task]:
         return [task for task in self.repo.load_tasks() if spec.is_satisfied_by(task)]
-'''
+```
