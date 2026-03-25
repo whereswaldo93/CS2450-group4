@@ -1,5 +1,7 @@
+from datetime import date
+
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from utils.file_handler import TaskFileRepo
 from models.task import Task, TaskStatus, TaskPriority
 from config import DATA_FILE
@@ -10,17 +12,41 @@ def _get_repo() -> TaskFileRepo:
     return TaskFileRepo(DATA_FILE)
 
 
-def hello_html_view(request) -> HttpResponse:
+def _count_overdue(tasks: list) -> int:
+    """Pending tasks whose due_date (YYYY-MM-DD) is before today."""
+    today = date.today()
+    n = 0
+    for t in tasks:
+        if t.status != TaskStatus.PENDING or not t.due_date:
+            continue
+        try:
+            parts = str(t.due_date).strip()[:10].split("-")
+            if len(parts) != 3:
+                continue
+            y, m, d = int(parts[0]), int(parts[1]), int(parts[2])
+            if date(y, m, d) < today:
+                n += 1
+        except (ValueError, TypeError):
+            continue
+    return n
+
+
+def _summary_stats(tasks: list) -> dict:
+    """Counts for stats cards (full task list, before list filters)."""
+    return {
+        "total": len(tasks),
+        "pending": sum(1 for t in tasks if t.status == TaskStatus.PENDING),
+        "completed": sum(1 for t in tasks if t.status == TaskStatus.COMPLETED),
+        "overdue": _count_overdue(tasks),
+    }
+
+
+def _task_list_page_context(request) -> dict:
+    """Load tasks, apply query filters/sort, and stats for list UIs (home + /tasks)."""
     repo = _get_repo()
     tasks = repo.load_tasks()
-    return render(request, "todos/hello.html", {"tasks": tasks})
+    stats = _summary_stats(tasks)
 
-
-def task_list(request) -> HttpResponse:
-    repo = _get_repo()
-    tasks = repo.load_tasks()
-
-    #filter the tasks
     filter_status = request.GET.get("status", "all")
     filter_priority = request.GET.get("priority", "all")
 
@@ -28,15 +54,14 @@ def task_list(request) -> HttpResponse:
         tasks = [task for task in tasks if task.status == TaskStatus.PENDING]
     elif filter_status == "completed":
         tasks = [task for task in tasks if task.status == TaskStatus.COMPLETED]
-    
-    if (filter_priority == "Low"):
+
+    if filter_priority == "Low":
         tasks = [task for task in tasks if task.priority.value == "Low"]
-    elif (filter_priority == "Medium"):
-        tasks = [task for task in tasks if task.priority.value == "Medium"] 
-    elif (filter_priority == "High"):
+    elif filter_priority == "Medium":
+        tasks = [task for task in tasks if task.priority.value == "Medium"]
+    elif filter_priority == "High":
         tasks = [task for task in tasks if task.priority.value == "High"]
 
-    #Sorting the tasks
     sort_by = request.GET.get("sort", "id")
     priority_order = {"High": 0, "Medium": 1, "Low": 2}
 
@@ -46,7 +71,22 @@ def task_list(request) -> HttpResponse:
         tasks = sorted(tasks, key=lambda t: (t.due_date is None, t.due_date or ""))
     elif sort_by == "title":
         tasks = sorted(tasks, key=lambda t: t.title.lower())
-    return render(request, "todos/tasks_list.html", {"tasks": tasks, "filter_status": filter_status, "filter_priority": filter_priority, "sort_by": sort_by})
+
+    return {
+        "tasks": tasks,
+        "filter_status": filter_status,
+        "filter_priority": filter_priority,
+        "sort_by": sort_by,
+        **stats,
+    }
+
+
+def hello_html_view(request) -> HttpResponse:
+    return render(request, "todos/hello.html", _task_list_page_context(request))
+
+
+def task_list(request) -> HttpResponse:
+    return render(request, "todos/tasks_list.html", _task_list_page_context(request))
 
 
 def add_task(request):
@@ -117,33 +157,55 @@ def edit_task(request, task_id):
     tasks = repo.load_tasks()
 
     task = next((task for task in tasks if task.task_id == task_id), None)
-    
-    #task not found
+
+    # task not found
     if task is None:
         return redirect("task_list")
-    
-    #post function
+
+    # post function
     if request.method == "POST":
         title = (request.POST.get("title") or "").strip()
         description = (request.POST.get("description") or "").strip()
-        priority = (request.POST.get("priority")or "Medium").strip()
+        priority = (request.POST.get("priority") or "Medium").strip()
         due_date = (request.POST.get("due_date") or "").strip() or None
 
         errors = {}
         if not title:
             errors["Title"] = "Title is required."
-        
+
         if errors:
-            return render(request, "todos/edit_task.html", {"errors": errors, "task": task, "title": title, "description": description, "priority": priority, "due_date": due_date})
-        
+            return render(
+                request,
+                "todos/edit_task.html",
+                {
+                    "errors": errors,
+                    "task": task,
+                    "title": title,
+                    "description": description,
+                    "priority": priority,
+                    "due_date": due_date,
+                },
+            )
+
         task.title = title
         task.description = description
         task.priority = TaskPriority.from_value(priority)
         task.due_date = due_date
-        
+
         repo.save_tasks(tasks)
         return redirect("task_list")
-    return render(request, "todos/edit_task.html", {"errors": {}, "task": task, "title": task.title, "description": task.description, "priority": task.priority.value, "due_date": task.due_date or "",},)
+    return render(
+        request,
+        "todos/edit_task.html",
+        {
+            "errors": {},
+            "task": task,
+            "title": task.title,
+            "description": task.description,
+            "priority": task.priority.value,
+            "due_date": task.due_date or "",
+        },
+    )
 
 
 def delete_task(request, task_id):
@@ -166,3 +228,19 @@ def complete_task(request, task_id):
             break
     repo.save_tasks(tasks)
     return redirect("task_list")
+
+
+def task_stats(request):
+    repo = _get_repo()
+    tasks = repo.load_tasks()
+
+    total = len(tasks)
+    pending = sum(1 for task in tasks if task.status == TaskStatus.PENDING)
+    completed = sum(1 for task in tasks if task.status == TaskStatus.COMPLETED)
+    return JsonResponse(
+        {
+            "total": total,
+            "pending": pending,
+            "completed": completed,
+        }
+    )

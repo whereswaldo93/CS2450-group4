@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do App</title>
+    <title>My To-Do List</title>
     <style>
         * {
             box-sizing: border-box;
@@ -174,6 +174,80 @@
             color: #666;
         }
 
+        .controls {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .control-group label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+        }
+
+        .control-group select{
+            padding: 9px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background-color: #f8fafc;
+            cursor: pointer;
+        }
+
+        .control-group select:focus{
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .number {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .stat-total { color: #222; }
+        .stat-pending { color: #2563eb; }
+        .stat-completed { color: #16a34a; }
+        .stat-overdue { color: #dc2626; }
+
         @media (max-width: 768px) {
             .task-top {
                 flex-direction: column;
@@ -195,6 +269,10 @@
                 align-items: flex-start;
                 gap: 15px;
             }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -206,6 +284,56 @@
             <a href="{% url 'add_task' %}" class="add-btn">+ Add Task</a>
         </div>
 
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="label">Total tasks</div>
+                <div class="number stat-total">{{ total }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Pending</div>
+                <div class="number stat-pending">{{ pending }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Completed</div>
+                <div class="number stat-completed">{{ completed }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Overdue</div>
+                <div class="number stat-overdue">{{ overdue }}</div>
+            </div>
+        </div>
+
+        <!--Filters and sorting-->
+        <form method="get" action="{% url 'hello_html_view' %}" class="controls">
+            <div class="control-group">
+                <label for="status-select">Status</label>
+                <select id="status-select" name="status" onchange="this.form.submit()">
+                    <option value="all"       {% if filter_status == 'all'       %}selected{% endif %}>All</option>
+                    <option value="pending"   {% if filter_status == 'pending'   %}selected{% endif %}>Pending</option>
+                    <option value="completed" {% if filter_status == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="priority-select">Priority</label>
+                <select id="priority-select" name="priority" onchange="this.form.submit()">
+                    <option value="all"    {% if filter_priority == 'all'    %}selected{% endif %}>All</option>
+                    <option value="High"   {% if filter_priority == 'High'   %}selected{% endif %}>High</option>
+                    <option value="Medium" {% if filter_priority == 'Medium' %}selected{% endif %}>Medium</option>
+                    <option value="Low"    {% if filter_priority == 'Low'    %}selected{% endif %}>Low</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="sort-select">Sort by</label>
+                <select id="sort-select" name="sort" onchange="this.form.submit()">
+                    <option value="id"       {% if sort_by == 'id'       %}selected{% endif %}>Date added</option>
+                    <option value="priority" {% if sort_by == 'priority' %}selected{% endif %}>Priority</option>
+                    <option value="due_date" {% if sort_by == 'due_date' %}selected{% endif %}>Due date</option>
+                    <option value="title"    {% if sort_by == 'title'    %}selected{% endif %}>Title</option>
+                </select>
+            </div>
+        </form>
         {% if tasks %}
         <div class="task-list">
             {% for task in tasks %}
@@ -252,7 +380,6 @@
                                 {% if task.status.value == 'Completed' %}Mark Pending{% else %}Mark Done{% endif %}
                             </button>
                         </form>
-
                         <a href="{% url 'edit_task' task.task_id %}" class="edit-btn">Edit</a>
                         <a href="{% url 'delete_task' task.task_id %}" class="delete-btn">Delete</a>
                     </div>

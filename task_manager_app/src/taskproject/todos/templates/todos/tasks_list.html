@@ -216,6 +216,38 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
 
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .number {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .stat-total { color: #222; }
+        .stat-pending { color: #2563eb; }
+        .stat-completed { color: #16a34a; }
+        .stat-overdue { color: #dc2626; }
+
         @media (max-width: 768px) {
             .task-top {
                 flex-direction: column;
@@ -237,6 +269,10 @@
                 align-items: flex-start;
                 gap: 15px;
             }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -246,6 +282,25 @@
         <div class="header">
             <h1>My To-Do List</h1>
             <a href="{% url 'add_task' %}" class="add-btn">+ Add Task</a>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="label">Total tasks</div>
+                <div class="number stat-total">{{ total }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Pending</div>
+                <div class="number stat-pending">{{ pending }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Completed</div>
+                <div class="number stat-completed">{{ completed }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Overdue</div>
+                <div class="number stat-overdue">{{ overdue }}</div>
+            </div>
         </div>
 
         <!--Filters and sorting-->
