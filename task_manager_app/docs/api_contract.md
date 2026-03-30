@@ -25,6 +25,7 @@ Represents a single to-do item.
   "priority": "High",
   "due_date": "2026-03-25",
   "status": "Pending",
+  "notes": "Remember to check for discounts."
 }
 ```
 
@@ -38,6 +39,7 @@ Represents a single to-do item.
 | priority    | string   | no       | Low, Medium or High      |
 | due_date    | date     | no       | Due date for the task    |
 | status      | string   | yes      | Pending or Completed     |
+| notes       | string   | no       | Optional task notes      |
 
 ---
 
