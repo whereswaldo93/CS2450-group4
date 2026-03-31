@@ -1,9 +1,9 @@
 from datetime import date
-
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
+
 from utils.file_handler import TaskFileRepo
-from models.task import Task, TaskStatus, TaskPriority
+from .models import Task, TaskStatus, TaskPriority
 from config import DATA_FILE
 
 
@@ -30,7 +30,6 @@ def _count_overdue(tasks: list) -> int:
             continue
     return n
 
-
 def _summary_stats(tasks: list) -> dict:
     """Counts for stats cards (full task list, before list filters)."""
     return {
@@ -39,7 +38,6 @@ def _summary_stats(tasks: list) -> dict:
         "completed": sum(1 for t in tasks if t.status == TaskStatus.COMPLETED),
         "overdue": _count_overdue(tasks),
     }
-
 
 def _task_list_page_context(request) -> dict:
     """Load tasks, apply query filters/sort, and stats for list UIs (home + /tasks)."""
