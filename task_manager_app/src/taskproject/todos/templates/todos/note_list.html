@@ -1,0 +1,7 @@
+<h1>Create a Note</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="notes">Notes:</label><br>
+    <textarea name="notes"></textarea><br><br>
+    <button type="submit">Save Note</button>
+</form>

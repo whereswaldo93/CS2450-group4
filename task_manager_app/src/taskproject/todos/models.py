@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from dataclasses import dataclass
 from enum import Enum
@@ -32,14 +34,24 @@ class Task:
     description: str
     priority: str
     due_date: str | None
-    status: TaskStatus = TaskStatus.PENDING
+    status: TaskStatus = TaskStatus.PENDING,
+    notes: str | None = None # new field for notes
 
     def __post_init__(self) -> None:
+        # Validate priorty
         if isinstance(self.priority, str): 
             self.priority = TaskPriority.from_value(self.priority)
         
+        # Validate status
         if isinstance(self.status, str):
             self.status = TaskStatus(self.status)
+
+        # Validate due date format
+        if self.due_date is not None:
+            try:
+                self.due_date = datetime.strptime(self.due_date, "%Y-%m-%d").date()
+            except ValueError:
+                raise ValueError("Invalid due date format. Use YYYY-MM-DD.")
 
     def to_dict(self) -> dict:
         return {
@@ -48,7 +60,8 @@ class Task:
             "description": self.description,
             "priority": self.priority.value,
             "due_date": self.due_date,
-            "status": self.status.value
+            "status": self.status.value, 
+            "notes": self.notes #include notes in the dictionary representation
         }
         
     @classmethod
@@ -60,7 +73,5 @@ class Task:
             priority=TaskPriority.from_value(data["priority"]),
             due_date=data.get("due_date"),
             status=TaskStatus(data.get("status", TaskStatus.PENDING.value)),
+            notes=data.get("notes") #get notes from the dictionary, default to None if not present
         )
-
-    
-

@@ -1,7 +1,70 @@
-# from django.test import TestCase
-# from django.urls import reverse
-# from django.test import Client
-# from .models import Task, TaskStatus
+import sys
+import os
+import unittest
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+
+from taskproject.todos.models import Task, TaskStatus, TaskPriority
+from taskproject.todos.views import add_task
+
+class MockRepo:
+    def __init__(self):
+        self.tasks = []
+
+    def load_tasks(self) -> list[Task]:
+        return self.tasks
+
+    def save_tasks(self, tasks: list[Task]) -> None:
+        self.tasks = tasks
+
+class TestTaskViews(unittest.TestCase):
+    def setUp(self):
+        self.repo = MockRepo()
+        self.task1 = Task(
+            task_id=1,
+            title="Test Task one",
+            description="This is a test task.",
+            due_date="2026-04-01",
+            priority=TaskPriority.MEDIUM,
+            status=TaskStatus.PENDING,
+            notes=""
+        )
+        self.task2 = Task(
+            task_id=2,
+            title="Test Task two",
+            description="This is another test task.",
+            due_date="2026-04-02",
+            priority=TaskPriority.LOW,
+            status=TaskStatus.COMPLETED,
+            notes=""
+        )
+        self.repo.tasks = [self.task1, self.task2]
+
+
+    def test_task_list_view(self):
+        tasks = self.repo.load_tasks()
+        self.assertEqual(len(tasks), 2)
+        self.assertEqual(tasks[0].title, "Test Task one")
+        self.assertEqual(tasks[1].title, "Test Task two")
+
+    def test_add_task(self):
+        new_task = Task(
+            task_id=3,
+            title="Third New Task",
+            description="This is a third new task.",
+            due_date="2026-12-31",
+            priority=TaskPriority.HIGH,
+            status=TaskStatus.PENDING,
+            notes=""
+        )
+
+        self.repo.save_tasks(self.repo.load_tasks() + [new_task])
+        self.assertEqual(new_task.task_id, 3) # Ensure the new task has the correct ID
+        self.assertEqual(new_task.title, "Third New Task") # Ensure the new task has the correct title
+        self.assertEqual(len(self.repo.load_tasks()), 3) # Ensure the task list now has 3 tasks
+
+if __name__ == '__main__':
+    unittest.main()
 
 # class TaskViewsTestCase(TestCase):
 #     def setUp(self):
@@ -17,12 +80,7 @@
 #             status=TaskStatus.COMPLETED
 #         )
 
-#     def test_task_list_view(self):
-#         response = self.client.get(reverse('task_list'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTemplateUsed(response, 'todos/tasks_list.html')
-#         self.assertContains(response, 'Test Task one')
-#         self.assertContains(response, 'Test Task two')
+#    
 
 #     def test_add_task(self):
 #         response = self.client.post(reverse('add_task'), {

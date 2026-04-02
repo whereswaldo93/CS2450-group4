@@ -242,3 +242,14 @@ def task_stats(request):
             "completed": completed,
         }
     )
+
+def note_create(request, task_id):
+    if request.method == "POST":
+        notes = request.POST.get("notes", "").strip()
+
+        if notes:
+            task = Task.objects.get(task_id=task_id)
+            task.notes = notes #update the notes field of the task
+            task.save() #save the updated task to the database 
+            return redirect("task_list") #Redirect to the task list view after saving the note
+    return render(request, "todos/note_list.html", {"task_id": task_id})
