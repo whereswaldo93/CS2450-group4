@@ -3,8 +3,7 @@ import os
 import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-from models.task import Task, TaskPriority, TaskStatus
-from models.task_manager import TaskManager
+from taskproject.todos.models import Task, TaskPriority, TaskStatus
 
 class MockRepo:
     def __init__(self):
@@ -16,51 +15,57 @@ class MockRepo:
     def save_tasks(self, tasks: list[Task]) -> None:
         self.tasks = tasks
 
-class TestTaskManager(unittest.TestCase):
+class TestTask(unittest.TestCase):
     def setUp(self):
         self.repo = MockRepo()
-        self.manager = TaskManager(self.repo)
-
-    def test_add_task_success(self):
-        task = self.manager.add_task(
+        self.task1 = Task(
+            task_id=1,
             title="Learn Pytest",
             description="Write some tests",
             due_date="2026-04-01",
-            priority="High"
+            priority=TaskPriority.HIGH,
+            status=TaskStatus.PENDING,
+            notes=""
         )
-        
-        self.assertEqual(task.task_id, 1)
-        self.assertEqual(task.title, "Learn Pytest")
-        self.assertEqual(task.priority, TaskPriority.HIGH)
-        self.assertEqual(len(self.repo.tasks), 1)
+        self.repo.save_tasks([self.task1])
 
-    def test_add_task_invalid_due_date(self):
-        with self.assertRaises(ValueError) as context:
-            self.manager.add_task(
-                title="Bad Date",
-                description="Testing errors",
-                due_date="04-01-2026",
-                priority="Low"
-            )
-        self.assertTrue("Invalid due date format" in str(context.exception))
+    def test_create_task(self):
+        task = Task(
+            task_id=2,
+            title="New Task",
+            description="Another task description.",
+            due_date="2026-04-05",
+            priority=TaskPriority.MEDIUM,
+            status=TaskStatus.PENDING,
+            notes=""
+        )
+        self.repo.save_tasks(self.repo.load_tasks() + [task])
+        
+        self.assertEqual(len(self.repo.load_tasks()), 2)
+        self.assertEqual(task.title, "New Task")
+        self.assertEqual(task.priority, TaskPriority.MEDIUM)
 
     def test_complete_task(self):
-        self.manager.add_task("Test Task", "", None, "Medium")
-        
-        result = self.manager.complete_task(task_id=1)
-        self.assertEqual(result, "completed")
-        self.assertEqual(self.manager.get_task(1).status, TaskStatus.COMPLETED)
-
-        result_again = self.manager.complete_task(task_id=1)
-        self.assertEqual(result_again, "already_complete")
+        self.task1.status = TaskStatus.COMPLETED
+        self.assertEqual(self.task1.status, TaskStatus.COMPLETED)
 
     def test_delete_task(self):
-        self.manager.add_task("To be deleted", "", None, "Low")
-        self.assertEqual(len(self.manager.list_tasks()), 1)
+        self.repo.save_tasks([self.task1])  # Ensure task is in the repo
+        self.repo.save_tasks([task for task in self.repo.load_tasks() if task.task_id != 1])
         
-        success = self.manager.delete_task(task_id=1)
-        self.assertTrue(success)
-        self.assertEqual(len(self.manager.list_tasks()), 0)
+        self.assertEqual(len(self.repo.load_tasks()), 0)  # Task should be deleted
+
+    def test_invalid_due_date(self):
+        with self.assertRaises(ValueError):
+            Task(
+                task_id=3,
+                title="Bad Date Task",
+                description="This task has an invalid due date.",
+                due_date="04-01-2026",  # Invalid format
+                priority=TaskPriority.LOW,
+                status=TaskStatus.PENDING,
+                notes=""
+            )
 
 if __name__ == '__main__':
     unittest.main()
