@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 
@@ -93,7 +93,9 @@ def add_task(request):
         description = (request.POST.get("description") or "").strip()
         priority = (request.POST.get("priority") or "Medium").strip()
         due_date = (request.POST.get("due_date") or "").strip() or None
+        notes = (request.POST.get("notes") or "").strip() or None
         errors = {}
+
         if not title:
             errors["title"] = "Title is required."
         if errors:
@@ -106,6 +108,7 @@ def add_task(request):
                     "description": request.POST.get("description"),
                     "priority": priority,
                     "due_date": request.POST.get("due_date"),
+                    "notes": notes,
                 },
             )
         repo = _get_repo()
@@ -118,6 +121,7 @@ def add_task(request):
             priority=priority,
             due_date=due_date,
             status=TaskStatus.PENDING,
+            notes=notes
         )
         tasks.append(new_task)
         repo.save_tasks(tasks)
@@ -131,6 +135,7 @@ def add_task(request):
             "description": "",
             "priority": "Medium",
             "due_date": "",
+            "notes": "",
         },
     )
 
@@ -165,12 +170,14 @@ def edit_task(request, task_id):
         title = (request.POST.get("title") or "").strip()
         description = (request.POST.get("description") or "").strip()
         priority = (request.POST.get("priority") or "Medium").strip()
-        due_date = (request.POST.get("due_date") or "").strip() or None
+        due_date_str = (request.POST.get("due_date") or "").strip() or None
+        notes = (request.POST.get("notes") or "").strip() or None
 
         errors = {}
         if not title:
             errors["Title"] = "Title is required."
 
+        # Return errors if validation fails
         if errors:
             return render(
                 request,
@@ -181,14 +188,37 @@ def edit_task(request, task_id):
                     "title": title,
                     "description": description,
                     "priority": priority,
-                    "due_date": due_date,
+                    "due_date": due_date_str,
+                    "notes": notes,
                 },
             )
 
+        due_date = None
+        if due_date_str:
+            try:
+                due_date = datetime.strptime(due_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                errors["due_date"] = "Invalid date format. Use YYYY-MM-DD."
+                return render(
+                    request,
+                    "todos/edit_task.html",
+                    {
+                        "errors": errors,
+                        "task": task,
+                        "title": title,
+                        "description": description,
+                        "priority": priority,
+                        "due_date": due_date_str,
+                        "notes": notes,
+                    },
+                )
+            
+        # Update task fields
         task.title = title
         task.description = description
         task.priority = TaskPriority.from_value(priority)
         task.due_date = due_date
+        task.notes = notes
 
         repo.save_tasks(tasks)
         return redirect("task_list")
@@ -202,6 +232,7 @@ def edit_task(request, task_id):
             "description": task.description,
             "priority": task.priority.value,
             "due_date": task.due_date or "",
+            "notes": task.notes or "",
         },
     )
 

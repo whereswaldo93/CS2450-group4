@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from django.db import models
 from dataclasses import dataclass
@@ -59,7 +59,7 @@ class Task:
             "title": self.title,
             "description": self.description,
             "priority": self.priority.value,
-            "due_date": self.due_date,
+            "due_date": self.due_date.isoformat() if isinstance(self.due_date, date) else self.due_date,
             "status": self.status.value, 
             "notes": self.notes #include notes in the dictionary representation
         }
