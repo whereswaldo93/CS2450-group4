@@ -193,6 +193,7 @@ def edit_task(request, task_id):
                 },
             )
 
+        # Convert due_date to a date object if provided
         due_date = None
         if due_date_str:
             try:
@@ -275,12 +276,15 @@ def task_stats(request):
     )
 
 def note_create(request, task_id):
+    repo = _get_repo()
+    tasks = repo.load_tasks()
+    task = next((task for task in tasks if task.task_id == task_id), None)
+
     if request.method == "POST":
         notes = request.POST.get("notes", "").strip()
 
         if notes:
-            task = Task.objects.get(task_id=task_id)
             task.notes = notes #update the notes field of the task
-            task.save() #save the updated task to the database 
+            repo.save_tasks(tasks) #save the updated task list back to the repo
             return redirect("task_list") #Redirect to the task list view after saving the note
     return render(request, "todos/note_list.html", {"task_id": task_id})
