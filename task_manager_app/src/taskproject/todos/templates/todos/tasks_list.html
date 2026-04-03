@@ -371,6 +371,12 @@
                             </span>
                             {% endif %}
                         </div>
+
+                        {% if task.notes %}
+                        <div class="notes">
+                            <strong>Notes:</strong> {{ task.notes }}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <div class="task-actions">
