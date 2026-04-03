@@ -62,7 +62,32 @@ class TestTaskViews(unittest.TestCase):
         self.assertEqual(new_task.task_id, 3) # Ensure the new task has the correct ID
         self.assertEqual(new_task.title, "Third New Task") # Ensure the new task has the correct title
         self.assertEqual(len(self.repo.load_tasks()), 3) # Ensure the task list now has 3 tasks
+    
+    def test_delete_task(self):
+        self.repo.save_tasks([task for task in self.repo.load_tasks() if task.task_id != 1])
+        self.assertEqual(len(self.repo.load_tasks()), 1) # Ensure the task list now has 1 task
+        self.assertEqual(self.repo.load_tasks()[0].task_id, 2) # Ensure the remaining task is the correct one
+    
+    def test_filter_by_status(self):
+        pending_tasks = [task for task in self.repo.load_tasks() if task.status == TaskStatus.PENDING]
+        self.assertEqual(len(pending_tasks), 1)
+        self.assertEqual(pending_tasks[0].title, "Test Task one")
 
+        completed_tasks = [task for task in self.repo.load_tasks() if task.status == TaskStatus.COMPLETED]
+        self.assertEqual(len(completed_tasks), 1)
+        self.assertEqual(completed_tasks[0].title, "Test Task two")
+    
+    def test_filter_by_priority(self):
+        medium_tasks = [task for task in self.repo.load_tasks() if task.priority == TaskPriority.MEDIUM]
+        self.assertEqual(len(medium_tasks), 1)
+        self.assertEqual(medium_tasks[0].title, "Test Task one")
+
+        low_tasks = [task for task in self.repo.load_tasks() if task.priority == TaskPriority.LOW]
+        self.assertEqual(len(low_tasks), 1)
+        self.assertEqual(low_tasks[0].title, "Test Task two")
+
+        high_tasks = [task for task in self.repo.load_tasks() if task.priority == TaskPriority.HIGH]
+        self.assertEqual(len(high_tasks), 0)
 if __name__ == '__main__':
     unittest.main()
 

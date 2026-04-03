@@ -66,6 +66,29 @@ class TestTask(unittest.TestCase):
                 status=TaskStatus.PENDING,
                 notes=""
             )
+    def test_invalid_priority(self):
+        with self.assertRaises(ValueError):
+            Task(
+                task_id=4,
+                title="Bad Priority Task",
+                description="This task has an invalid priority.",
+                due_date="2026-04-01",
+                priority="URGENT",  # Invalid priority
+                status=TaskStatus.PENDING,
+                notes=""
+            )
+    def test_task_with_no_due_date(self):
+        task = Task(
+            task_id=5,
+            title="No Due Date Task",
+            description="This task has no due date.",
+            due_date=None,  # No due date
+            priority=TaskPriority.MEDIUM,
+            status=TaskStatus.PENDING,
+            notes=""
+        )
+        self.assertIsNone(task.due_date)
+    
 
 if __name__ == '__main__':
     unittest.main()
