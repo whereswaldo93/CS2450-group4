@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>My To-Do List</title>
     <style>
         * {
@@ -248,6 +249,23 @@
         .stat-completed { color: #16a34a; }
         .stat-overdue { color: #dc2626; }
 
+        .notes {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f1f5f9;
+            border-left: 4px solid #2563eb;
+            border-radius: 8px;
+        }
+
+        .notes-toggle {
+            margin-top: 15px;
+        }
+
+        .toggle-notes-btn:hover {
+            opacity: 0.8;
+            background-color: #1d4ed8;
+        }
+
         @media (max-width: 768px) {
             .task-top {
                 flex-direction: column;
@@ -372,11 +390,19 @@
                             {% endif %}
                         </div>
 
+                        <!-- Clickable Note Icon-->
                         {% if task.notes %}
-                        <div class="notes">
-                            <strong>Notes:</strong> {{ task.notes }}
-                        </div>
+                        <button class="toggle-notes-btn" onclick="toggleNotes('{{ task.task_id }}')" style="background: none; border: none; cursor: pointer; margin-top: 10px;">
+                            <i class="fas fa-sticky-note"></i> <!-- Note icon -->
+                            <i id="plus-icon-{{ task.task_id }}" class="fas fa-plus-circle" style="display: inline;"></i> <!-- Plus icon -->
+                            <i id="minus-icon-{{ task.task_id }}" class="fas fa-minus-circle" style="display: none;"></i> <!-- Minus icon -->
+                        </button>
                         {% endif %}
+
+                        <!-- Notes Section -->
+                        <div class="notes" id="notes-{{ task.task_id }}" style="display: none;">
+                            <p>{{ task.notes }}</p>
+                        </div>
                     </div>
 
                     <div class="task-actions">
@@ -400,6 +426,23 @@
         </div>
         {% endif %}
     </div>
-</body>
 
+    <script>
+        function toggleNotes(taskId) {
+            const notesDiv = document.getElementById(`notes-${taskId}`);
+            const plusIcon = document.getElementById(`plus-icon-${taskId}`);
+            const minusIcon = document.getElementById(`minus-icon-${taskId}`);
+
+            if (notesDiv.style.display === "none") {
+                notesDiv.style.display = "block"; 
+                plusIcon.style.display = "none"; 
+                minusIcon.style.display = "inline"; 
+            } else {
+                notesDiv.style.display = "none";
+                plusIcon.style.display = "inline"; 
+                minusIcon.style.display = "none"; 
+            }
+        }
+    </script>
+</body>
 </html>
