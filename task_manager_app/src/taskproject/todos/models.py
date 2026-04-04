@@ -38,6 +38,10 @@ class Task:
     notes: str | None = None # new field for notes
 
     def __post_init__(self) -> None:
+        # Validate title
+        if not self.title.strip():
+            raise ValueError("Title cannot be empty.")
+
         # Validate priorty
         if isinstance(self.priority, str): 
             self.priority = TaskPriority.from_value(self.priority)
@@ -48,12 +52,18 @@ class Task:
 
         # Validate due date format
         if self.due_date is not None:
-            try:
-                self.due_date = datetime.strptime(self.due_date, "%Y-%m-%d").date()
-            except ValueError:
+            if isinstance(self.due_date, str):
+                try:
+                    self.due_date = datetime.strptime(self.due_date, "%Y-%m-%d").date()
+                except ValueError:
+                    raise ValueError("Invalid due date format. Use YYYY-MM-DD.")
+            elif not isinstance(self.due_date, date):
                 raise ValueError("Invalid due date format. Use YYYY-MM-DD.")
-
-    def to_dict(self) -> dict:
+        
+            # Check if the due date is in the past
+            if self.due_date < date.today():
+                raise ValueError("Due date cannot be in the past.")
+            
         return {
             "task_id": self.task_id,
             "title": self.title,
