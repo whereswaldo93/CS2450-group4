@@ -28,7 +28,7 @@
    - Tentative meeting at 3pm on Friday, **04/10/2026**, to present and record
    
 **Current plan for the final milestone.**
-   - Discuss in further detail during the 04/07/2026 stand-up meeting
+   - Discuss in further detail during the **04/07/2026** stand-up meeting
    - Assign tasks during this meeting
 
 Meeting confirmed for **04/07/2026**, to go over final milestone and assign tasks
