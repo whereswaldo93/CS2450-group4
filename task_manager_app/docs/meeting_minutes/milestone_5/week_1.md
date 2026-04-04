@@ -31,4 +31,4 @@
    - Discuss in further detail during the 04/07/2026 stand-up meeting
    - Assign tasks during this meeting
 
-11. Meeting confirmed for **04/07/2026**, to go over final milestone and assign tasks
+Meeting confirmed for **04/07/2026**, to go over final milestone and assign tasks
