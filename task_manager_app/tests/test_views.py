@@ -1,3 +1,4 @@
+from datetime import date
 import sys
 import os
 import unittest
@@ -47,7 +48,7 @@ class TestTaskViews(unittest.TestCase):
         self.assertEqual(tasks[0].title, "Test Task one")
         self.assertEqual(tasks[1].title, "Test Task two")
 
-    def test_add_task(self):
+    def test_add_task_view(self):
         new_task = Task(
             task_id=3,
             title="Third New Task",
@@ -57,11 +58,13 @@ class TestTaskViews(unittest.TestCase):
             status=TaskStatus.PENDING,
             notes=""
         )
-
+        
         self.repo.save_tasks(self.repo.load_tasks() + [new_task])
-        self.assertEqual(new_task.task_id, 3) # Ensure the new task has the correct ID
-        self.assertEqual(new_task.title, "Third New Task") # Ensure the new task has the correct title
-        self.assertEqual(len(self.repo.load_tasks()), 3) # Ensure the task list now has 3 tasks
+        tasks = self.repo.load_tasks()
+        self.assertEqual(len(tasks), 3)
+        self.assertEqual(tasks[2].title, "Third New Task")
+        self.assertEqual(tasks[2].priority, TaskPriority.HIGH)
+
     
     def test_delete_task(self):
         self.repo.save_tasks([task for task in self.repo.load_tasks() if task.task_id != 1])
@@ -89,7 +92,7 @@ class TestTaskViews(unittest.TestCase):
         high_tasks = [task for task in self.repo.load_tasks() if task.priority == TaskPriority.HIGH]
         self.assertEqual(len(high_tasks), 0)
 
-    def test_edit_task(self):
+    def test_edit_task_view(self):
         self.task1.title = 'Updated Task Title'
         self.task1.description = 'Updated description.'
         self.task1.due_date = '2026-05-01'
@@ -103,6 +106,78 @@ class TestTaskViews(unittest.TestCase):
         self.assertEqual(updated_task.priority, TaskPriority.HIGH)
         self.assertEqual(updated_task.status, TaskStatus.COMPLETED)
 
-        
+    def test_view_task_details(self):
+        task = self.repo.load_tasks()[0]
+        self.assertEqual(task.task_id, 1)
+        self.assertEqual(task.title, "Test Task one")
+        self.assertEqual(task.description, "This is a test task.")
+        self.assertEqual(task.due_date, date(2027, 4, 1))
+        self.assertEqual(task.priority, TaskPriority.MEDIUM)
+        self.assertEqual(task.status, TaskStatus.PENDING)
+        self.assertEqual(task.notes, "")
+
+    def test_add_notes_to_task_view(self):
+        self.task1.notes = "These are some notes for the task."
+        self.repo.save_tasks([self.task1, self.task2])  # Save the updated task
+        updated_task = self.repo.load_tasks()[0]
+        self.assertEqual(updated_task.notes, "These are some notes for the task.")
+    
+    def test_delete_notes_from_task_view(self):
+        self.task1.notes = "These are some notes for the task."
+        self.repo.save_tasks([self.task1, self.task2])  # Save the updated task
+        self.task1.notes = ""  # Clear the notes
+        self.repo.save_tasks([self.task1, self.task2])  # Save the updated task again
+        updated_task = self.repo.load_tasks()[0]
+        self.assertEqual(updated_task.notes, "")  # Ensure the notes have been deleted
+
+    def test_edit_task_with_notes_view(self):
+        self.task1.notes = "Initial notes."
+        self.repo.save_tasks([self.task1, self.task2])  # Save the updated task
+        self.task1.title = 'Updated Task Title with Notes'
+        self.task1.description = 'Updated description with notes.'
+        self.task1.due_date = '2026-06-01'
+        self.task1.priority = TaskPriority.HIGH
+        self.task1.status = TaskStatus.COMPLETED
+        self.repo.save_tasks([self.task1, self.task2])  # Save the updated task again
+        updated_task = self.repo.load_tasks()[0]
+        self.assertEqual(updated_task.title, 'Updated Task Title with Notes')
+        self.assertEqual(updated_task.description, 'Updated description with notes.')
+        self.assertEqual(updated_task.due_date, '2026-06-01')
+        self.assertEqual(updated_task.priority, TaskPriority.HIGH)
+        self.assertEqual(updated_task.status, TaskStatus.COMPLETED)
+        self.assertEqual(updated_task.notes, "Initial notes.")  # Ensure notes are unchanged
+
+    def test_delete_non_existent_notes_view(self):
+        self.task1.notes = "These are some notes for the task."
+        self.repo.save_tasks([self.task1, self.task2])  # Save the updated task
+        self.task1.notes = None  # Attempt to delete notes by setting to None
+        self.repo.save_tasks([self.task1, self.task2])  # Save the updated task again
+        updated_task = self.repo.load_tasks()[0]
+        self.assertIsNone(updated_task.notes)  # Ensure the notes have been deleted  
+
+    def test_empty_task_list_view(self):
+        self.repo.save_tasks([])  # Clear all tasks
+        tasks = self.repo.load_tasks()
+        self.assertEqual(len(tasks), 0)  # Ensure the task list is empty
+
+    # def test_add_task_with_missing_title_view(self):
+    #     new_task = Task(
+    #         task_id=4,
+    #         title="",
+    #         description="This task has no title.",
+    #         due_date="2026-11-30",
+    #         priority=TaskPriority.MEDIUM,
+    #         status=TaskStatus.PENDING,
+    #         notes=""
+    #     )
+    #     self.repo.save_tasks(self.repo.load_tasks() + [new_task])
+    #     tasks = self.repo.load_tasks()
+    #     self.assertEqual(len(tasks), 3)
+    #     self.assertEqual(tasks[2].title, "")  # Ensure the task was added with an empty title  
+
+    def test_delete_non_existent_task_view(self):
+        self.repo.save_tasks([task for task in self.repo.load_tasks() if task.task_id != 999])  # Attempt to delete a non-existent task
+        self.assertEqual(len(self.repo.load_tasks()), 2)  # Task list should remain unchanged
+
 if __name__ == '__main__':
     unittest.main()
