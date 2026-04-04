@@ -2,30 +2,33 @@
 #### 04/04/2026
 
 #### Attendence
-  -
-## Agenda
-  
-1. Follow up from last week
-   - Anyone need help?
+  - Jake
+  - Osvaldo
+  - Javi
+    
+## Notes
      
-2. Current coverage report
+**Current coverage report, this needs to be assigned to someone**
    - Still need explanation of which areas are well-tested and which need improvement.
    - .html(s)/.md(s)/screenshot(s) of the coverage summary.
    - Include at least one short discussion about key findings from your testing process.
 
-3. Assign updating README file to include
+**Assign updating README file to include, this needs to be assigned to someone**
    - Instructions for running tests.
    - Tools used (pytest, pytest-cov, coverage.py).
    - Coverage summary or badge (optional).
 
-4. Identify test weak spots
+**Identify test weak spots**
+   - This section can  be filled out after Javi and Jake implement their tests
 
-5. Decisions
-
-6. Follow up actions
+**Follow up actions**
+   - Osvaldo will reach out to the professor to ask if we can record our presentation since this is an online course and not all team members will be in the same city at the time the assignment is due.
+   - Create release by 6pm on Monday, **04/06/2026** (Osvaldo will take care of this)
+   - Tentative meeting at 3pm on Thursday, **04/09/2026**, for practice run
+   - Tentative meeting at 3pm on Friday, **04/10/2026**, to present and record
    
-7. Plan for the final milestone.
+**Current plan for the final milestone.**
+   - Discuss in further detail during the 04/07/2026 stand-up meeting
+   - Assign tasks during this meeting
 
-8. Discuss presention and plan for final milestone
-
-9. Confirm meeting for 04/11/2026
+11. Meeting confirmed for **04/07/2026**, to go over final milestone and assign tasks
