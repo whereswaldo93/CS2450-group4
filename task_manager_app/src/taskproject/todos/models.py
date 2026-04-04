@@ -64,6 +64,7 @@ class Task:
             if self.due_date < date.today():
                 raise ValueError("Due date cannot be in the past.")
             
+    def to_dict(self) -> dict:        
         return {
             "task_id": self.task_id,
             "title": self.title,
