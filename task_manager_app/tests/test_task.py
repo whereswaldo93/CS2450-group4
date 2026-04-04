@@ -131,54 +131,54 @@ class TestTask(unittest.TestCase):
         saved_task = self.repo.load_tasks()[-1]
         self.assertEqual(saved_task.notes, "These are some notes for the task.")
 
-    # def delete_non_existent_task(self):
-    #     self.repo.save_tasks([task for task in self.repo.load_tasks() if task.task_id != 999])  # Attempt to delete a non-existent task
-    #     self.assertEqual(len(self.repo.load_tasks()), 1)  # Task list should remain unchanged
+    def test_delete_non_existent_task(self):
+        self.repo.save_tasks([task for task in self.repo.load_tasks() if task.task_id != 999])  # Attempt to delete a non-existent task
+        self.assertEqual(len(self.repo.load_tasks()), 1)  # Task list should remain unchanged
 
-    # def delete_task_notes(self):
-    #     task_with_notes = Task(
-    #         task_id=9,
-    #         title="Task with Notes to Delete",
-    #         description="This task has notes that will be deleted.",
-    #         due_date="2026-07-01",
-    #         priority=TaskPriority.MEDIUM,
-    #         status=TaskStatus.PENDING,
-    #         notes="These notes will be deleted."
-    #     )
-    #     self.repo.save_tasks(self.repo.load_tasks() + [task_with_notes])
-    #     saved_task = self.repo.load_tasks()[-1]
-    #     saved_task.notes = None  # Delete the notes
-    #     self.assertIsNone(saved_task.notes)  # Ensure the notes are deleted
+    def test_delete_task_notes(self):
+        task_with_notes = Task(
+            task_id=9,
+            title="Task with Notes to Delete",
+            description="This task has notes that will be deleted.",
+            due_date="2026-07-01",
+            priority=TaskPriority.MEDIUM,
+            status=TaskStatus.PENDING,
+            notes="These notes will be deleted."
+        )
+        self.repo.save_tasks(self.repo.load_tasks() + [task_with_notes])
+        saved_task = self.repo.load_tasks()[-1]
+        saved_task.notes = None  # Delete the notes
+        self.assertIsNone(saved_task.notes)  # Ensure the notes are deleted
 
-    # def edit_task_notes(self):
-    #     task_with_notes = Task(
-    #         task_id=11,
-    #         title="Task with Notes to Edit",
-    #         description="This task has notes that will be edited.",
-    #         due_date="2026-09-01",
-    #         priority=TaskPriority.HIGH,
-    #         status=TaskStatus.PENDING,
-    #         notes="These notes will be edited."
-    #     )
-    #     self.repo.save_tasks(self.repo.load_tasks() + [task_with_notes])
-    #     saved_task = self.repo.load_tasks()[-1]
-    #     saved_task.notes = "These notes have been edited."  # Edit the notes
-    #     self.assertEqual(saved_task.notes, "These notes have been edited.")  # Ensure the notes are updated correctly
+    def test_edit_task_notes(self):
+        task_with_notes = Task(
+            task_id=11,
+            title="Task with Notes to Edit",
+            description="This task has notes that will be edited.",
+            due_date="2026-09-01",
+            priority=TaskPriority.HIGH,
+            status=TaskStatus.PENDING,
+            notes="These notes will be edited."
+        )
+        self.repo.save_tasks(self.repo.load_tasks() + [task_with_notes])
+        saved_task = self.repo.load_tasks()[-1]
+        saved_task.notes = "These notes have been edited."  # Edit the notes
+        self.assertEqual(saved_task.notes, "These notes have been edited.")  # Ensure the notes are updated correctly
 
-    # def adding_notes_to_existing_task(self):
-    #     task_without_notes = Task(
-    #         task_id=10,
-    #         title="Task without Notes",
-    #         description="This task initially has no notes.",
-    #         due_date="2026-08-01",
-    #         priority=TaskPriority.HIGH,
-    #         status=TaskStatus.PENDING,
-    #         notes=None
-    #     )
-    #     self.repo.save_tasks(self.repo.load_tasks() + [task_without_notes])
-    #     saved_task = self.repo.load_tasks()[-1]
-    #     saved_task.notes = "These are some added notes."  # Add notes to the existing task
-    #     self.assertEqual(saved_task.notes, "These are some added notes.")  # Ensure the notes are added correctly
+    def test_adding_notes_to_existing_task(self):
+        task_without_notes = Task(
+            task_id=10,
+            title="Task without Notes",
+            description="This task initially has no notes.",
+            due_date="2026-08-01",
+            priority=TaskPriority.HIGH,
+            status=TaskStatus.PENDING,
+            notes=None
+        )
+        self.repo.save_tasks(self.repo.load_tasks() + [task_without_notes])
+        saved_task = self.repo.load_tasks()[-1]
+        saved_task.notes = "These are some added notes."  # Add notes to the existing task
+        self.assertEqual(saved_task.notes, "These are some added notes.")  # Ensure the notes are added correctly
 
 if __name__ == '__main__':
     unittest.main()
