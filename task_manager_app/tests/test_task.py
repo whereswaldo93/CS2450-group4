@@ -35,7 +35,7 @@ class TestTask(unittest.TestCase):
             task_id=2,
             title="New Task",
             description="Another task description.",
-            due_date="2026-04-05",
+            due_date="2027-04-05",
             priority=TaskPriority.MEDIUM,
             status=TaskStatus.PENDING,
             notes=""
