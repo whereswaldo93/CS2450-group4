@@ -381,14 +381,14 @@
                     </div>
 
                     <div class="task-actions">
-                        <form action="{% url 'toggle_task' task.task_id %}" method="post">
+                        <form action="{% url 'toggle_task' task.id %}" method="post">
                             {% csrf_token %}
                             <button type="submit" class="toggle-btn">
                                 {% if task.status.value == 'Completed' %}Mark Pending{% else %}Mark Done{% endif %}
                             </button>
                         </form>
-                        <a href="{% url 'edit_task' task.task_id %}" class="edit-btn">Edit</a>
-                        <a href="{% url 'delete_task' task.task_id %}" class="delete-btn">Delete</a>
+                        <a href="{% url 'edit_task' task.id %}" class="edit-btn">Edit</a>
+                        <a href="{% url 'delete_task' task.id %}" class="delete-btn">Delete</a>
                     </div>
                 </div>
             </div>
