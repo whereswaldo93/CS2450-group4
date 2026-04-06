@@ -34,7 +34,7 @@ This project uses the `unittest` framework for testing. You can run the tests an
 ### Running Unit Tests
   To run all unit tests, use the following command: 
   ```bash
-  python -m unittest discover -s task_manager_app/tests -p "*.py"
+  python -m unittest discover -f
 
 ```
 
