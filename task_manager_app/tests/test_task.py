@@ -4,7 +4,7 @@ import os
 import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-from taskproject.todos.models import Task, TaskPriority, TaskStatus
+from taskproject.todos.file_task import Task, TaskPriority, TaskStatus
 
 class MockRepo:
     def __init__(self):

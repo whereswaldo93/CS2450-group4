@@ -1,88 +1,39 @@
-from datetime import date, datetime
-
+from django.conf import settings
 from django.db import models
-from dataclasses import dataclass
-from enum import Enum
 
-class TaskPriority(str, Enum):
-    LOW = "Low"
-    MEDIUM = "Medium"
-    HIGH = "High"
 
-    @classmethod
-    def from_value(cls, value: str) -> "TaskPriority":
-        normalized = value.strip().lower()
+class Task(models.Model):
+    class Priority(models.TextChoices):
+        LOW = "Low", "Low"
+        MEDIUM = "Medium", "Medium"
+        HIGH = "High", "High"
 
-        mapping = {
-            "low": cls.LOW,
-            "medium": cls.MEDIUM,
-            "high": cls.HIGH
-        }
-        if normalized not in mapping:
-            raise ValueError("Invalid priority. Choose one of: Low, Medium, High.")
-        
-        return mapping[normalized]
+    class Status(models.TextChoices):
+        PENDING = "Pending", "Pending"
+        COMPLETED = "Completed", "Completed"
 
-class TaskStatus(str, Enum):
-    PENDING = "Pending"
-    COMPLETED = "Completed"
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="tasks",
+    )
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    priority = models.CharField(
+        max_length=20,
+        choices=Priority.choices,
+        default=Priority.MEDIUM,
+    )
+    due_date = models.DateField(null=True, blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
+    notes = models.TextField(blank=True, null=True)
 
-@dataclass
-class Task:
-    task_id: int
-    title: str
-    description: str
-    priority: str
-    due_date: str | None
-    status: TaskStatus = TaskStatus.PENDING,
-    notes: str | None = None # new field for notes
+    class Meta:
+        ordering = ["-id"]
 
-    def __post_init__(self) -> None:
-        # Validate title
-        if not self.title.strip():
-            raise ValueError("Title cannot be empty.")
-
-        # Validate priorty
-        if isinstance(self.priority, str): 
-            self.priority = TaskPriority.from_value(self.priority)
-        
-        # Validate status
-        if isinstance(self.status, str):
-            self.status = TaskStatus(self.status)
-
-        # Validate due date format
-        if self.due_date is not None:
-            if isinstance(self.due_date, str):
-                try:
-                    self.due_date = datetime.strptime(self.due_date, "%Y-%m-%d").date()
-                except ValueError:
-                    raise ValueError("Invalid due date format. Use YYYY-MM-DD.")
-            elif not isinstance(self.due_date, date):
-                raise ValueError("Invalid due date format. Use YYYY-MM-DD.")
-        
-            # Check if the due date is in the past
-            if self.due_date < date.today():
-                raise ValueError("Due date cannot be in the past.")
-            
-    def to_dict(self) -> dict:        
-        return {
-            "task_id": self.task_id,
-            "title": self.title,
-            "description": self.description,
-            "priority": self.priority.value,
-            "due_date": self.due_date.isoformat() if isinstance(self.due_date, date) else self.due_date,
-            "status": self.status.value, 
-            "notes": self.notes #include notes in the dictionary representation
-        }
-        
-    @classmethod
-    def from_dict(cls, data: dict) -> "Task":
-        return cls(
-            task_id=data["task_id"],
-            title=data["title"],
-            description=data.get("description", ""),
-            priority=TaskPriority.from_value(data["priority"]),
-            due_date=data.get("due_date"),
-            status=TaskStatus(data.get("status", TaskStatus.PENDING.value)),
-            notes=data.get("notes") #get notes from the dictionary, default to None if not present
-        )
+    def __str__(self) -> str:
+        return self.title

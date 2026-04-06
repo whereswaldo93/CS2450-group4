@@ -1,0 +1,7 @@
+<div class="user-nav">
+    <span class="user-nav-name">{{ user.username }}</span>
+    <form action="{% url 'logout' %}" method="post" class="user-nav-logout">
+        {% csrf_token %}
+        <button type="submit" class="user-nav-logout-btn">Log out</button>
+    </form>
+</div>

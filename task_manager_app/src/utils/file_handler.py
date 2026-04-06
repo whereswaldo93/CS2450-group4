@@ -1,7 +1,7 @@
 import json
 from json import JSONDecodeError
 from pathlib import Path
-from taskproject.todos.models import Task
+from taskproject.todos.file_task import Task
 
 class TaskFileRepo:
     def __init__(self, path: Path) -> None:

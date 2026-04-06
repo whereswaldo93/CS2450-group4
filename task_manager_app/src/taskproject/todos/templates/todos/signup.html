@@ -1,0 +1,199 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up — To-Do App</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            font-size: 14px;
+            color: #222;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input::placeholder {
+            color: #a0aec0;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            background: #222;
+            color: #fff;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 4px;
+            margin-bottom: 24px;
+        }
+
+        .submit-btn:hover {
+            background: #333;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .footer-text a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        .error-messages {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .error-messages ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .error-messages li {
+            margin-bottom: 4px;
+        }
+
+        .error-messages li:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M9 14l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+            <span class="logo-text">To-Do App</span>
+        </div>
+
+        <p class="subtitle">Create your account</p>
+
+        {% if errors %}
+        <div class="error-messages">
+            <ul>
+                {% for err in errors %}
+                <li>{{ err }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'signup' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <input type="text" name="username" placeholder="Username" required autofocus
+                    value="{{ username }}">
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password1" placeholder="Password" required>
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password2" placeholder="Confirm password" required>
+            </div>
+
+            <button type="submit" class="submit-btn">Create account</button>
+        </form>
+
+        <p class="footer-text">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+    </div>
+</body>
+
+</html>
