@@ -8,7 +8,7 @@ from datetime import date, timedelta
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'taskproject.core.settings')
 django.setup()
 
-from taskproject.todos.models import Task
+from todos.models import Task
 
 class TaskManagerDjangoTests(TestCase):
     def setUp(self):
