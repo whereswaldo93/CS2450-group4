@@ -1,24 +1,6 @@
-# from datetime import datetime, date
-# import sys
-# import os
-# import unittest
-
 from django.test import TestCase
 from django.utils import timezone
-from src.taskproject.todos.models import Task
-
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-# from taskproject.todos.file_task import Task, TaskPriority, TaskStatus
-
-# class MockRepo:
-#     def __init__(self):
-#         self.tasks = []
-
-#     def load_tasks(self) -> list[Task]:
-#         return self.tasks
-
-#     def save_tasks(self, tasks: list[Task]) -> None:
-#         self.tasks = tasks
+from taskproject.todos.models import Task
 
 class TestTask(TestCase):
     def setUp(self):
@@ -26,8 +8,8 @@ class TestTask(TestCase):
             title="Learn Pytest",
             description="Write some tests",
             due_date="2027-04-01",
-            priority=TaskPriority.HIGH,
-            status=TaskStatus.PENDING,
+            priority=Task.Priority.HIGH,
+            status=Task.Status.PENDING,
             notes=""
         )
 
@@ -36,20 +18,20 @@ class TestTask(TestCase):
             title="New Task",
             description="Another task description.",
             due_date="2027-04-05",
-            priority=TaskPriority.MEDIUM,
-            status=TaskStatus.PENDING,
+            priority=Task.Priority.MEDIUM,
+            status=Task.Status.PENDING,
             notes=""
         )
         self.assertEqual(len(Task.objects.all()), 2)
         self.assertEqual(task.title, "New Task")
-        self.assertEqual(task.priority, TaskPriority.MEDIUM)
-        self.assertEqual(task.status, TaskStatus.PENDING)
+        self.assertEqual(task.priority, Task.Priority.MEDIUM)
+        self.assertEqual(task.status, Task.Status.PENDING)
         self.assertEqual(task.notes, "")
 
     def test_complete_task(self):
-        self.task1.status = TaskStatus.COMPLETED
+        self.task1.status = Task.Status.COMPLETED
         self.task1.save()
-        self.assertEqual(self.task1.status, TaskStatus.COMPLETED)
+        self.assertEqual(self.task1.status, Task.Status.COMPLETED)
 
     def test_delete_task(self):
         self.task1.delete()
@@ -62,8 +44,8 @@ class TestTask(TestCase):
                 title="Bad Date Task",
                 description="This task has an invalid due date.",
                 due_date="04-01-2026",  # Invalid format
-                priority=TaskPriority.LOW,
-                status=TaskStatus.PENDING,
+                priority=Task.Priority.LOW,
+                status=Task.Status.PENDING,
                 notes=""
             )
 
@@ -74,7 +56,7 @@ class TestTask(TestCase):
                 description="This task has an invalid priority.",
                 due_date="2027-04-01",
                 priority="URGENT",  # Invalid priority
-                status=TaskStatus.PENDING,
+                status=Task.Status.PENDING,
                 notes=""
             )
 
@@ -83,8 +65,8 @@ class TestTask(TestCase):
             title="No Due Date Task",
             description="This task has no due date.",
             due_date=None,
-            priority=TaskPriority.MEDIUM,
-            status=TaskStatus.PENDING,
+            priority=Task.Priority.MEDIUM,
+            status=Task.Status.PENDING,
             notes=""
         )
         self.assertIsNone(task.due_date)
@@ -95,8 +77,8 @@ class TestTask(TestCase):
                 title="",  # Empty title
                 description="This task has no title.",
                 due_date="2027-04-01",
-                priority=TaskPriority.MEDIUM,
-                status=TaskStatus.PENDING,
+                priority=Task.Priority.MEDIUM,
+                status=Task.Status.PENDING,
                 notes=""
             )
 
@@ -107,8 +89,8 @@ class TestTask(TestCase):
                 title="Past Due Date Task",
                 description="This task has a past due date.",
                 due_date=past_date,  # Past due date
-                priority=TaskPriority.MEDIUM,
-                status=TaskStatus.PENDING,
+                priority=Task.Priority.MEDIUM,
+                status=Task.Status.PENDING,
                 notes=""
             )
         self.assertEqual(str(context.exception), "Due date cannot be in the past.")
@@ -118,8 +100,8 @@ class TestTask(TestCase):
             title="Task with Notes",
             description="This task has notes.",
             due_date="2026-06-01",
-            priority=TaskPriority.LOW,
-            status=TaskStatus.PENDING,
+            priority=Task.Priority.LOW,
+            status=Task.Status.PENDING,
             notes="These are some notes for the task."
         )
         self.assertEqual(task_with_notes.notes, "These are some notes for the task.")
@@ -135,8 +117,8 @@ class TestTask(TestCase):
             title="Task with Notes to Delete",
             description="This task has notes that will be deleted.",
             due_date="2026-07-01",
-            priority=TaskPriority.MEDIUM,
-            status=TaskStatus.PENDING,
+            priority=Task.Priority.MEDIUM,
+            status=Task.Status.PENDING,
             notes="These notes will be deleted."
         )
         task_with_notes.notes = None  # Delete the notes
@@ -148,8 +130,8 @@ class TestTask(TestCase):
             title="Task with Notes to Edit",
             description="This task has notes that will be edited.",
             due_date="2026-09-01",
-            priority=TaskPriority.HIGH,
-            status=TaskStatus.PENDING,
+            priority=Task.Priority.HIGH,
+            status=Task.Status.PENDING,
             notes="These notes will be edited."
         )
         task_with_notes.notes = "These notes have been edited."  # Edit the notes
@@ -161,13 +143,10 @@ class TestTask(TestCase):
             title="Task without Notes",
             description="This task initially has no notes.",
             due_date="2026-08-01",
-            priority=TaskPriority.HIGH,
-            status=TaskStatus.PENDING,
+            priority=Task.Priority.HIGH,
+            status=Task.Status.PENDING,
             notes=None
         )
         task_without_notes.notes = "These are some added notes."  # Add notes to the existing task
         task_without_notes.save()
         self.assertEqual(task_without_notes.notes, "These are some added notes.")  # Ensure the notes are added correctly
-
-# if __name__ == '__main__':
-#     unittest.main()
