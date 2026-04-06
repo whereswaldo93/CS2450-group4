@@ -159,21 +159,6 @@ class TestTaskViews(unittest.TestCase):
         tasks = self.repo.load_tasks()
         self.assertEqual(len(tasks), 0)  # Ensure the task list is empty
 
-    # def test_add_task_with_missing_title_view(self):
-    #     new_task = Task(
-    #         task_id=4,
-    #         title="",
-    #         description="This task has no title.",
-    #         due_date="2026-11-30",
-    #         priority=TaskPriority.MEDIUM,
-    #         status=TaskStatus.PENDING,
-    #         notes=""
-    #     )
-    #     self.repo.save_tasks(self.repo.load_tasks() + [new_task])
-    #     tasks = self.repo.load_tasks()
-    #     self.assertEqual(len(tasks), 3)
-    #     self.assertEqual(tasks[2].title, "")  # Ensure the task was added with an empty title  
-
     def test_delete_non_existent_task_view(self):
         self.repo.save_tasks([task for task in self.repo.load_tasks() if task.task_id != 999])  # Attempt to delete a non-existent task
         self.assertEqual(len(self.repo.load_tasks()), 2)  # Task list should remain unchanged
