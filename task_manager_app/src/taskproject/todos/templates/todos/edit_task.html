@@ -62,7 +62,7 @@
         </div>
 
         <div class="form-card">
-            <form method="post" action="{% url 'edit_task' task.task_id %}">
+            <form method="post" action="{% url 'edit_task' task.id %}">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="title">Title *</label>
