@@ -5,7 +5,7 @@
   - Jake
   - Osvaldo
   - Javi
-  - 
+  - Kyle
 ### Agenda
 
 1. Clarify speaking points: what you built, how you built it, and why it matters.
