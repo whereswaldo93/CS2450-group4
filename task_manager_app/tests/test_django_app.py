@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from datetime import date, timedelta
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'taskproject.core.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 django.setup()
 
 from todos.models import Task
