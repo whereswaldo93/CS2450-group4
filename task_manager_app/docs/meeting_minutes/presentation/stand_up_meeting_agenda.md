@@ -1,6 +1,11 @@
-##### Presentation week, stand up meeting 
-##### 04/07/2026
+## Presentation week, stand up meeting 
+#### 04/07/2026
 
+#### Attendence
+  - Jake
+  - Osvaldo
+  - Javi
+  - 
 ### Agenda
 
 1. Clarify speaking points: what you built, how you built it, and why it matters.
