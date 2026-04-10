@@ -32,6 +32,9 @@
 
 - **README.md Update**
   - I didn't catch what was needed for this besides maybe having more details of how to run the app and something about the tests?
+ 
+- **models.py**
+  - Use more try/except handling instead of if statements   
 
 ### Final Exam
 - This test will be made up from 80% of material after the midterm, and 20% of it will be about material before the midterm. 
