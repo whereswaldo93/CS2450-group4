@@ -1,5 +1,5 @@
 # Presentation Feedback
-#### Attendence on 04/10/2026
+#### Attendance on 04/10/2026
 
   - Osvaldo
   - Javi
