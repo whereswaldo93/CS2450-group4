@@ -1,6 +1,6 @@
 # Presentation week, stand up meeting 
 ## Notes
-#### Attendence for 04/07/2026
+#### Attendance for 04/07/2026
 
   - Osvaldo
   - Javi

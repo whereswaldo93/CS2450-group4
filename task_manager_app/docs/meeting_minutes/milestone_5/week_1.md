@@ -1,7 +1,7 @@
 # Milestone 5, Saturday meeting 
 #### 04/04/2026
 
-#### Attendence
+#### Attendance
   - Jake
   - Osvaldo
   - Javi
