@@ -2,7 +2,6 @@
 #### Attendance on 04/11/2026
 
   - Kyle, Osvaldo, Javi
-
 ### Objectives with assignment:
 
 **UML - (Kyle)**
@@ -42,10 +41,20 @@
 **Code Refactoring - (Jake)**
   - Identify 5+ code smells and fix them (step 2 in final milestone)
 ---
+**Create and document robustness & exception handling - (Needs assignment)**
+  - Final Submission Milestone step 3
+---
+**Email instructor with this plan - (Osvaldo)**
+
+---
+
 ### Include type hints in the files you are working on, refer to Final Submission Milestone
 ### Replace if statements with try/except logic throughout the app
 
-### Osvaldo will email the team and our instructor with this initial game plan for the next two weeks
-
 ### Next meeting is scheduled at 4:00 PM on Tuesday, 04/14/2026
-### Reminder: The Final Submission is due Tuesday, 04/21/2026
+### The Final Release due 04/21/2026 should include
+- Known limitations
+- Identified bugs
+- Future work
+- Robustness and code smell fixes.
+- Summary of final improvements
