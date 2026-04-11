@@ -1,16 +1,10 @@
-from datetime import date, datetime
-
-from django.contrib import messages
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
-
-from .models import Task
+from datetime import datetime, date
+from ..models import Task
+from django.http import JsonResponse
 
 
 def _count_overdue(tasks: list) -> int:
@@ -33,8 +27,8 @@ def _summary_stats(tasks: list) -> dict:
     }
 
 
-def _task_list_page_context(request) -> dict:
-    qs = Task.objects.filter(user=request.user)
+def task_list_page_context(request) -> dict:
+    qs = Task.objects.filter(user=request.user)  # pylint: disable=no-member
     tasks = list(qs)
     stats = _summary_stats(tasks)
 
@@ -63,7 +57,9 @@ def _task_list_page_context(request) -> dict:
     if sort_by == "priority":
         tasks = sorted(tasks, key=lambda t: priority_order.get(t.priority, 99))
     elif sort_by == "due_date":
-        tasks = sorted(tasks, key=lambda t: (t.due_date is None, t.due_date or date.min))
+        tasks = sorted(
+            tasks, key=lambda t: (t.due_date is None, t.due_date or date.min)
+        )
     elif sort_by == "title":
         tasks = sorted(tasks, key=lambda t: t.title.lower())
     else:
@@ -78,61 +74,14 @@ def _task_list_page_context(request) -> dict:
     }
 
 
-def signup_view(request: HttpRequest) -> HttpResponse:
-    if request.user.is_authenticated:
-        return redirect("task_list")
-    if request.method == "POST":
-        username = (request.POST.get("username") or "").strip()
-        password1 = request.POST.get("password1") or ""
-        password2 = request.POST.get("password2") or ""
-        errors: list[str] = []
-        if not username:
-            errors.append("Username is required.")
-        if not password1:
-            errors.append("Password is required.")
-        elif password1 != password2:
-            errors.append("Passwords do not match.")
-        else:
-            try:
-                validate_password(password1, User(username=username))
-            except ValidationError as e:
-                errors.extend(e.messages)
-        if User.objects.filter(username=username).exists():
-            errors.append("That username is already taken.")
-        if errors:
-            return render(
-                request,
-                "todos/signup.html",
-                {"errors": errors, "username": username},
-            )
-        user = User.objects.create_user(username=username, password=password1)
-        login(request, user)
-        return redirect("task_list")
-    return render(request, "todos/signup.html", {"errors": [], "username": ""})
-
-
-def login_view(request: HttpRequest) -> HttpResponse:
-    if request.user.is_authenticated:
-        return redirect("task_list")
-    if request.method == "POST":
-        username = (request.POST.get("username") or "").strip()
-        password = request.POST.get("password") or ""
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect("task_list")
-        messages.error(request, "Invalid username or password.")
-    return render(request, "todos/login.html")
-
-
 @login_required
 def hello_html_view(request) -> HttpResponse:
-    return render(request, "todos/hello.html", _task_list_page_context(request))
+    return render(request, "todos/hello.html", task_list_page_context(request))
 
 
 @login_required
 def task_list(request) -> HttpResponse:
-    return render(request, "todos/tasks_list.html", _task_list_page_context(request))
+    return render(request, "todos/tasks_list.html", task_list_page_context(request))
 
 
 @login_required
@@ -171,7 +120,7 @@ def add_task(request):
                 },
             )
 
-        Task.objects.create(
+        Task.objects.create(  # pylint: disable=no-member
             user=request.user,
             title=title,
             description=description,
@@ -296,7 +245,11 @@ def complete_task(request, task_id):
 
 @login_required
 def task_stats(request):
-    tasks = list(Task.objects.filter(user=request.user))
+    tasks = list(
+        Task.objects.filter(user=request.user).order_by(
+            "-id"
+        )  # pylint: disable=no-member
+    )
     total = len(tasks)
     pending = sum(1 for t in tasks if t.status == Task.Status.PENDING)
     completed = sum(1 for t in tasks if t.status == Task.Status.COMPLETED)

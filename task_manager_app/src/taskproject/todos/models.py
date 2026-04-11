@@ -1,10 +1,19 @@
-from django.conf import settings
-from django.db import models
-from django.core.exceptions import ValidationError
-from django.utils import timezone
+from __future__ import annotations
+
 import datetime
+from typing import ClassVar
+
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models.manager import Manager
+from django.utils import timezone
+
 
 class Task(models.Model):
+    # Typed default manager so static analysis recognizes `.objects` / `.create()`.
+    objects: ClassVar[Manager[Task]] = models.Manager()
+
     class Priority(models.TextChoices):
         LOW = "Low", "Low"
         MEDIUM = "Medium", "Medium"
