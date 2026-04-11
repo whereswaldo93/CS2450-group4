@@ -1,10 +1,7 @@
 # Stand-up meeting
-##### Attendance on 04/10/2026
+##### Attendance on 04/14/2026
 
-  - Osvaldo
-  - Javi
-  - Kyle
-  - Jake
+  - Osvaldo, Javi, Kyle, Jake
 
 --- 
 ### Task assignment 
