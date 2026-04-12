@@ -3,6 +3,9 @@
 # Django web app (taskproject)
 Django>=5.0,<6.1
 
+# Load .env in development / local settings (core/settings.py)
+python-dotenv>=1.0,<2.0
+
 # Django REST framework (used in INSTALLED_APPS)
 djangorestframework>=3.14,<4.0
 

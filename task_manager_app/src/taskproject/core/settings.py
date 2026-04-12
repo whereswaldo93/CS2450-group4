@@ -14,8 +14,12 @@ import os
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv  # pylint: disable=import-error
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
 # Allow importing utils and models from the parent app (task_manager_app/src).
 SRC_DIR = BASE_DIR.parent
 if str(SRC_DIR) not in sys.path:
@@ -26,16 +30,12 @@ if str(SRC_DIR) not in sys.path:
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-2=6l-r+68et+f@jpg&m0yfak=ftlkpc=#8a=_qo59@tba*uz8$"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".onrender.com",  # Render hosting
-]
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(",")
 if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
     ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
 
