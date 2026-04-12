@@ -1,43 +1,67 @@
 # Software Requirements Specification
 ## For To-Do List
 
-Version 0.1  
-Prepared by Osvaldo, Jake, Kyle  
+Version 0.2  
+Prepared by Osvaldo, Jake, Kyle, and Javi  
 Spring CS-2450, Utah Valley University
-02/22/2026
+05/12/2026
 
 ## Table of Contents
 <!-- TOC -->
-* [1. Introduction](#1-introduction)
-    * [1.1 Document Purpose](#11-document-purpose)
-    * [1.2 Product Scope](#12-product-scope)
-    * [1.3 Definitions, Acronyms, and Abbreviations](#13-definitions-acronyms-and-abbreviations)
-    * [1.4 References](#14-references)
-    * [1.5 Document Overview](#15-document-overview)
-* [2. Product Overview](#2-product-overview)
-    * [2.1 Product Perspective](#21-product-perspective)
-    * [2.2 Product Functions](#22-product-functions)
-    * [2.3 Product Constraints](#23-product-constraints)
-    * [2.4 User Characteristics](#24-user-characteristics)
-    * [2.5 Assumptions and Dependencies](#25-assumptions-and-dependencies)
-    * [2.6 Apportioning of Requirements](#26-apportioning-of-requirements)
-* [3. Requirements](#3-requirements)
-    * [3.1 External Interfaces](#31-external-interfaces)
-    * [3.2 Functional](#32-functional)
-    * [3.3 Quality of Service](#33-quality-of-service)
-    * [3.4 Compliance](#34-compliance)
-    * [3.5 Design and Implementation](#35-design-and-implementation)
-    * [3.6 AI/ML](#36-aiml)
-* [4. Verification](#4-verification)
-* [5. Appendixes](#5-appendixes)
+- [Software Requirements Specification](#software-requirements-specification)
+  - [For To-Do List](#for-to-do-list)
+  - [Table of Contents](#table-of-contents)
+  - [Revision History](#revision-history)
+  - [1. Introduction](#1-introduction)
+    - [1.1 Document Purpose](#11-document-purpose)
+    - [1.2 Product Scope](#12-product-scope)
+    - [1.3 Definitions, Acronyms, and Abbreviations](#13-definitions-acronyms-and-abbreviations)
+    - [1.4 References](#14-references)
+    - [1.5 Document Overview](#15-document-overview)
+  - [2. Product Overview](#2-product-overview)
+    - [2.1 Product Perspective](#21-product-perspective)
+    - [2.2 Product Functions](#22-product-functions)
+    - [2.3 Product Constraints](#23-product-constraints)
+    - [2.4 User Characteristics](#24-user-characteristics)
+    - [2.5 Assumptions and Dependencies](#25-assumptions-and-dependencies)
+      - [2.5.1 Assumptions](#251-assumptions)
+    - [2.5.2 Dependencies](#252-dependencies)
+    - [2.6 Apportioning of Requirements](#26-apportioning-of-requirements)
+  - [3. Requirements](#3-requirements)
+    - [3.1 External Interfaces](#31-external-interfaces)
+      - [3.1.1 User Interfaces](#311-user-interfaces)
+      - [3.1.2 Hardware Interfaces](#312-hardware-interfaces)
+      - [3.1.3 Software Interfaces](#313-software-interfaces)
+    - [3.2 Functional](#32-functional)
+    - [3.3 Quality of Service](#33-quality-of-service)
+      - [3.3.1 Performance](#331-performance)
+      - [3.3.2 Security](#332-security)
+      - [3.3.3 Reliability](#333-reliability)
+      - [3.3.4 Availability](#334-availability)
+      - [3.3.5 Observability](#335-observability)
+    - [3.4 Compliance](#34-compliance)
+    - [3.5 Design and Implementation](#35-design-and-implementation)
+      - [3.5.1 Installation](#351-installation)
+      - [3.5.2 Build and Delivery](#352-build-and-delivery)
+      - [3.5.3 Distribution](#353-distribution)
+      - [3.5.4 Maintainability](#354-maintainability)
+      - [3.5.5 Reusability](#355-reusability)
+      - [3.5.6 Portability](#356-portability)
+      - [3.5.7 Cost](#357-cost)
+      - [3.5.8 Deadline](#358-deadline)
+      - [3.5.9 Proof of Concept](#359-proof-of-concept)
+      - [3.5.10 Change Management](#3510-change-management)
+    - [3.6 AI/ML](#36-aiml)
+  - [4. Verification](#4-verification)
+  - [5. Appendixes](#5-appendixes)
 <!-- TOC -->
 
 ## Revision History
 
 | Name | Date | Reason For Changes | Version |
 |------|------|--------------------|---------|
-|      |      |                    |         |
-|      |      |                    |         |
+| Osvaldo, Jake, Kyle, Javi | 04/12/2026 | Initial SRS draft | 0.1 |
+| Javi | 04/12/2026 | Updated constraints, dependencies, product functions, and security rationale to reflect final Django/SQLite architecture. Removed inapplicable AI/ML section. | 0.2 |
 
 ## 1. Introduction
   This Software Requirements Specification (SRS) defines the requirements for the To-Do List System designed for local college students. The purpose of this document is described in Section 1.1 (Document Purpose) and establishes this SRS as the formal agreement between stakeholders and developers regarding system functionality and constraints. The overall scope and objectives of the To-Do List System are summarized in Section 1.2 (Product Scope). This document is intended for developers, project managers, testers, and stakeholders who require a clear understanding of system requirements. Relevant terminology and references are provided in Section 1.3 (Definitions, Acronyms, and Abbreviations) and Section 1.4 (References).
@@ -61,7 +85,9 @@ A more detailed explanation of the document structure is provided in Section 1.5
 ### 1.2 Product Scope
 💬 _Defines the software product’s purpose, boundaries, and relationship to business goals._
 
-➥ Identify the product by name and version/release. In 3–5 sentences, describe its primary purpose, key capabilities, and intended outcomes. Clearly list inclusions and exclusions when this SRS covers part of a larger system. Focus on the “what” and “why.”
+The To-Do List System (version 0.2) is a web-based task management application built with Django and SQLite, designed for local college students. It allows users to create, edit, complete, delete, filter, and sort personal tasks through a browser-based interface. Each user has a private account and can only access their own tasks. The system runs locally by default and can be deployed to a cloud hosting provider such as Render for broader access.
+
+This SRS covers the full web application including authentication, task management, and the REST framework integration. It does not cover mobile native applications, third-party integrations, or bulk data import/export features.
 
 💡 Tips:
 - Connect capabilities to business objectives and reference a separate vision/scope document if relevant.
@@ -74,11 +100,18 @@ A more detailed explanation of the document structure is provided in Section 1.5
 - Include terms that impact interpretation of requirements (e.g., “user,” “tenant,” “near real-time”).
 - Keep entries alphabetized and consistent across the document set.
 
-| Term | Definition                                                                                                                   |
-|------|------------------------------------------------------------------------------------------------------------------------------|
-| API  | Application Programming Interface - A set of definitions and protocols for building and integrating application software     |
-| SRS  | Software Requirements Specification - A document that describes the intended purpose, requirements, and nature of a software |
-| UI   | User Interface - The visual part of computer application through which a user interacts with a software                      |
+| Term     | Definition                                                                                                                   |
+|----------|------------------------------------------------------------------------------------------------------------------------------|
+| API      | Application Programming Interface - A set of definitions and protocols for building and integrating application software     |
+| Django   | A high-level Python web framework used to build the application                                                              |
+| Gunicorn | A Python WSGI HTTP server used to serve the application in production                                                        |
+| MTV      | Model-Template-View - The architectural pattern used by Django, similar to MVC                                               |
+| ORM      | Object-Relational Mapper - Django's built-in tool for interacting with the database using Python objects instead of SQL      |
+| PBKDF2   | Password-Based Key Derivation Function 2 - The hashing algorithm Django uses to store passwords securely                    |
+| SQLite   | A lightweight file-based relational database used to store task and user data                                                |
+| SRS      | Software Requirements Specification - A document that describes the intended purpose, requirements, and nature of a software |
+| Task     | The core data object in the system, consisting of a title, description, priority, due date, status, and optional notes      |
+| UI       | User Interface - The visual part of computer application through which a user interacts with a software                      |
 
 ### 1.4 References
 💬 _Lists external sources that are normative or informative for this SRS._
@@ -91,7 +124,7 @@ A more detailed explanation of the document structure is provided in Section 1.5
 ### 1.5 Document Overview
 💬 _Brief guide to the structure of the SRS so readers can quickly find what they need._
 
-➥ Summarize what each major section covers (Product Overview, Requirements, Verification, Appendixes), note any document conventions, and mention how updates and revision history are managed.
+Section 2 provides a high-level overview of the product including its functions, constraints, user characteristics, and dependencies. Section 3 details all functional and non-functional requirements organized by category, each with a unique ID, statement, rationale, acceptance criteria, and verification method. Section 4 contains a verification matrix linking each requirement to its verification status. Section 5 contains any supporting appendix material. Updates to this document are tracked in the Revision History table and requirement IDs are immutable once assigned.
 
 💡 Tips:
 - Keep to 3–5 sentences focusing on navigation and conventions.
@@ -104,7 +137,7 @@ The To-Do List System is designed to provide a centralized, web-based task manag
 ### 2.1 Product Perspective
 💬 _Places the product within a larger ecosystem or lineage._
 
-➥ Describe context and origin of the product, whether this is a new product, replacement, or member of a family. If part of a larger system, briefly explain relationships, external interfaces, and key dependencies. Include details on ownership, service level agreements (SLAs), and support models.
+The To-Do List System is a new, standalone web application developed as a course project for CS-2450 at Utah Valley University. It is not a replacement for an existing system and does not integrate with any external platforms. The application is self-contained, with Django handling routing and business logic, SQLite storing all data, and Django's built-in authentication managing user accounts. It has no upstream or downstream system dependencies beyond the libraries listed in `requirements.txt`.
 
 💡 Tips:
 - Highlight upstream/downstream systems and ownership boundaries.
@@ -112,23 +145,21 @@ The To-Do List System is designed to provide a centralized, web-based task manag
 
 ### 2.2 Product Functions
 The Task Manager is designed to organize, track, and manage tasks based on the following areas.
--Task creation: Users can create new tasks with a title, description, due date, and priority level.
--Task options: Users can delete, read, update, and complete tasks.
-- Advanced options: Users can perform bulk actions, undo actions, add notes and files, and oragnize tasks/subtasks by several categories.
-- Dashboard: Users can access a homepage displaying urgent tasks, visual analytics, and task completion.
-- Data portability: CSV files can be imported and exported to populate data or keep a copy.
-
-[UML Diagram](UML.pdf)
+- Task creation: Users can create new tasks with a title, description, due date, priority level, and optional notes.
+- Task options: Users can delete, edit, complete, and toggle the status of tasks.
+- Filtering and sorting: Users can filter tasks by status and priority, and sort by title, due date, or priority.
+- Dashboard: Users can access a homepage displaying a summary of total, pending, completed, and overdue tasks.
+- Authentication: Users can sign up, log in, and log out. Each user only sees their own tasks.
 
 💡 Tips:
 - 5–10 bullets are often sufficient at this level, grouping related functions logically.
 - Include a top-level data flow or use case diagram if helpful.
 
 ### 2.3 Product Constraints
-- The MVP must operate on a Python CLI using data from the local file tasks.json.
-- To support collaboration functions across devices, local JSON storage must migrate to a central database.
-- The system should restrict file size (including attachments) to 10MB to control database management and high transfer speeds.
+- The system operates as a Django web application backed by a SQLite database.
 - The UI must implement standard web design principles to be utilized across multiple browsers and screen sizes.
+- The system must enforce user authentication so that each user can only access their own tasks.
+- The application can be deployed to a cloud hosting provider such as Render using environment variables for all sensitive configuration values.
 
 ➥ Describe constraints such as mandated interfaces, technology stacks, regulatory obligations, QoS baselines, hardware limitations, AI/ML model families, and organizational policies.
 
@@ -143,7 +174,7 @@ Requirements (Section 3) defines verifiable system obligations—specific behavi
 ### 2.4 User Characteristics
 💬 _Defines the user groups and the attributes that affect requirements._
 
-➥ Identify user classes, roles, and personas, noting expertise, access levels, frequency of use, accessibility needs, and goals.
+The primary users are local college students with basic computer literacy and access to a modern web browser. Users are expected to manage their own tasks independently and do not require any technical knowledge to use the system. All users have the same access level — there are no admin roles exposed through the UI, though Django's built-in admin panel is available for developers. Users are expected to interact with the system frequently during busy academic periods such as midterms and finals.
 
 💡 Tips:
 - Define user classes by behavior, not just titles.
@@ -151,11 +182,11 @@ Requirements (Section 3) defines verifiable system obligations—specific behavi
 
 ### 2.5 Assumptions and Dependencies
 #### 2.5.1 Assumptions
-Users will import tasks via a CSV file formatted to the standardized template of the application.
-Time sensitive analytics like due dates and progress bars assume the users date and time settings are accurate.
+Users will have access to a modern web browser to access the application.
+Time sensitive features like due date validation and overdue task counts assume the user's date and time settings are accurate.
 
 ### 2.5.2 Dependencies
-For the MVP, the application depends on local file permissions to tasks.json.
+The application depends on Django and its ORM for database access, SQLite for data storage, python-dotenv for environment variable loading, and Render for production hosting.
 
 ### 2.6 Apportioning of Requirements
 💬 _Allocation of requirements across components or increments._
@@ -206,7 +237,7 @@ Requirement ID schema and traceability:
 - Title: Web-based responsive UI
 - Statement: The website will be able to be used with common web browsers 
 - Rationale: We want anyone to be able to use our website no matter what web browser they use
-- Acceptance Criteria: Website loads on firefox, safari, internet explorer, google chrome
+- Acceptance Criteria: Website loads on Firefox, Safari, Google Chrome, and Edge
 - Verification Method: Inspection
 - More Information:
 
@@ -249,7 +280,7 @@ Requirement ID schema and traceability:
 💬 _Defines integrations with other software components and services._
 - ID: REQ-INT-005
 - Title: Saving data to be able to reload if the website ever crashes.
-- Statement: The website will save data to a database, making it so that it will be able to load the data from the previous time opened
+- Statement: The website will save data to a SQLite database via the Django ORM, making it so that it will be able to load the data from the previous time opened
 - Rationale: We don't want tasks to disappear randomly
 - Acceptance Criteria: Saves data and is able to load data on start up
 - Verification Method: Test | Inspection
@@ -275,9 +306,9 @@ Requirement ID schema and traceability:
 
 - ID: REQ-FUNC-002
 - Title: Create task
-- Statement: The website will be able to create new tasks with all of the required requirements for a task.
+- Statement: The website will be able to create new tasks with a title, description, priority, due date, and optional notes.
 - Rationale: We need tasks to be able to populate our website
-- Acceptance Criteria: tasks are created and added to our database
+- Acceptance Criteria: Tasks are created and added to the database with all expected fields
 - Verification Method: Test
 - More Information:
 
@@ -307,9 +338,9 @@ Requirement ID schema and traceability:
 
 - ID: REQ-FUNC-006
 - Title: Mark task complete
-- Statement: The website will be able to mark a task as completed, and will then hide the task unless prompted to show completed tasks.
+- Statement: The website will be able to mark a task as completed. Completed tasks remain visible by default and can be hidden by filtering the task list to show only pending tasks.
 - Rationale: Once a task is done we need to be able to mark it as completed
-- Acceptance Criteria: Checks that it is completed and then hides
+- Acceptance Criteria: Task status is updated to completed and can be filtered in or out of the display
 - Verification Method: Test | Inspection
 - More Information:
 
@@ -353,16 +384,16 @@ Requirement ID schema and traceability:
 💬 _Defines the protection of data, identities, and operations._
 - ID: REQ-SEC-001
 - Title: The passwords are secure
-- Statement: The passwords will either be hashed or outsourced to a to a service that securely stores passwords
+- Statement: Passwords are hashed using Django's built-in PBKDF2 algorithm via the Django authentication system. Plaintext passwords are never stored.
 - Rationale: We don't want our clients passwords to be leaked
-- Acceptance Criteria: Passwords are hashed
+- Acceptance Criteria: Passwords are hashed in the database and cannot be read back as plaintext
 - Verification Method: Inspection
 - More Information:
 
 - ID: REQ-SEC-002
 - Title: Task privacy
 - Statement: The website will make sure that you are only able to view and edit tasks that you are supposed to be able to
-- Rationale: We want people to view other people's tasks
+- Rationale: We don't want people to be able to view or edit other people's tasks
 - Acceptance Criteria: Can only see tasks for which you have permissions.
 - Verification Method: Inspection
 - More Information:
@@ -376,7 +407,7 @@ Requirement ID schema and traceability:
 Place generic security controls here (3.3.2), and cross-reference from supported controls as necessary:
 - Use 3.1 External Interfaces for interface-level validation and secure protocols.
 - Use 3.4 Compliance for regulatory/contractual obligations and audit evidence.
-- Use 3.6 AI/ML for model-specific runtime protections and data governance.
+- Section 3.6 AI/ML is not applicable to this project.
 
 #### 3.3.3 Reliability
 💬 _Ability to consistently perform as specified._
@@ -429,7 +460,14 @@ Place generic security controls here (3.3.2), and cross-reference from supported
 #### 3.5.1 Installation
 💬 _Ensures the software runs smoothly in its target environments._
 
-➥ Define (un)supported platforms/environments, prerequisites, installation methods, environment configuration (e.g., env vars, secrets), and rollback/uninstall procedures.
+The application is designed to run locally on any machine with Python installed. To set up the project:
+1. Clone the repository from GitHub.
+2. Create a `.env` file in `task_manager_app/src/taskproject/` using `.env.example` as a template and fill in the required values.
+3. Install dependencies: `pip install -r requirements.txt`
+4. Apply database migrations: `python manage.py migrate`
+5. Start the development server: `python manage.py runserver`
+
+Prerequisites: Python 3.10+, pip, and a compatible operating system (macOS, Windows, or Linux).
 
 💡 Tips:
 - Detail automation expectations (e.g., IaC, installer scripts, container images).
@@ -447,12 +485,22 @@ Place generic security controls here (3.3.2), and cross-reference from supported
 #### 3.5.3 Distribution
 💬 _Addresses geographically or organizationally distributed deployments, data, and devices._
 
-➥ Specify deployment topologies, component and data distribution/replication approaches and scale-out runbooks, and constraints imposed by organizational or network structure.
+The primary deployment target is a local machine running Django's development server. The application can be scaled to a cloud hosting provider such as Render by:
+- Setting all required environment variables (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`) in the hosting provider's dashboard instead of a local `.env` file.
+- Serving the application via Gunicorn instead of Django's development server.
+- Adding the provider's external hostname to `ALLOWED_HOSTS`.
+
+No additional infrastructure changes are required for a single-instance cloud deployment. Multi-region or load-balanced deployments are outside the current scope.
 
 #### 3.5.4 Maintainability
 💬 _Attributes that make the software easier to modify, fix, and evolve._
 
-➥ Define expectations for modularity, code complexity, interfaces, coding standards, developer oriented observability, documentation, software delivery performance, and technical debt management.
+The codebase follows these standards to ensure it remains easy to maintain and extend:
+- **SOLID principles**: User and task concerns are separated into `auth_views.py` and `task_view.py` respectively.
+- **PEP 8**: All Python files follow PEP 8 style guidelines including the 79-character line limit.
+- **Type hints**: All view functions include type annotations on parameters and return values.
+- **Docstrings**: All functions include docstrings describing their purpose, arguments, and return values.
+- **Environment configuration**: All sensitive values are managed via `.env` and never hardcoded.
 
 #### 3.5.5 Reusability
 💬 _Encourages leveraging components across products or contexts when appropriate._
@@ -496,63 +544,33 @@ Place generic security controls here (3.3.2), and cross-reference from supported
 ➥ Define change categories (breaking, additive, bugfix), approval workflow, and required artifacts (changelogs, evaluation summaries, migration guides, release notes). Specify backward/forward compatibility guarantees, client communication plans, deprecation timelines, and rollout/rollback procedures.
 
 ### 3.6 AI/ML
-💬 _This section defines requirements unique to systems incorporating machine learning or data-driven components at their core. These requirements complement functional, quality, and design aspects in preceding sections but address ML-specific lifecycle, data, and ethical considerations._
-
-#### 3.6.1 Model Specification
-💬 _Defines what each model is intended to do and the measurable criteria for acceptable performance._
-
-➥ Describe model(s) purpose, scope, expected behavior, key inputs and outputs, and measurable performance objectives. Note any validation datasets, benchmarks, or versioning practices used to ensure reproducibility.
-
-💡 Tips:
-- Distinguish baseline targets from aspirational improvements and define acceptable tolerance for drift.
-
-#### 3.6.2 Data Management
-💬 _Ensures integrity, traceability, and ethical lifecycle of data used in model training, validation, and operation._
-
-➥ Specify dataset origin, ownership, consent conditions; labeling processes and quality controls; data lineage, versioning, and reproducibility (training → validation → inference); storage, access controls, and anonymization/pseudonymization standards; handling of missing, synthetic, or augmented data.
-
-#### 3.6.3 Guardrails
-💬 _Ensure that the AI system operates safely, predictably, and within approved boundaries._
-
-➥ Specify how the system validates inputs, filters or constrains outputs, and limits available actions to prevent harm, misuse, or unintended consequences. Include mechanisms to detect and respond to malicious inputs or unsafe operational conditions.
-
-💡 Tips:
-- Treat “guardrails” across input, output, and action layers.
-- Define escalation, logging, and rollback procedures when safety constraints are triggered.
-- Cross-reference 3.3.2 Security for system-level protections and 3.6.4 Ethics for normative expectations.
-
-#### 3.6.4 Ethics
-💬 _Addresses fairness, transparency, and accountability in model behavior and outcomes._
-
-➥ Define how ethical considerations will be identified, measured, and managed throughout development and operation. Include fairness objectives, explainability expectations, and documentation or review requirements.
-
-💡 Tips:
-- Use fairness metrics appropriate to context (e.g., demographic parity, equal opportunity).
-- Consider organizing into subcategories for clarity: Fairness (societal bias in outcomes), Interpretability (can inspect the model and understand outputs), and Explainability (can explain an output for a given input).
-- Coordinate with 3.6.3 Guardrails for enforcement mechanisms and 3.6.5 Human-in-the-Loop for human oversight.
-
-#### 3.6.5 Human-in-the-Loop
-💬 _Specifies the role of human oversight in decisions influenced or made by machine learning models._
-
-➥ Describe where and how human review, approval, or intervention is required. Clarify review latency or throughput expectations, escalation paths, feedback mechanisms, traceability, and auditability of human actions.
-
-💡 Tips:
-- Link to applicable roles defined in 2.4 User Characteristics.
-
-#### 3.6.6 Model Lifecycle and Operations
-💬 _Defines requirements for deploying, monitoring, retraining, and retiring models in production._
-
-➥ Outline how models transition from development to production, how their performance and data quality are monitored, and how retraining or rollback is triggered and managed. Include expectations for versioning and archival.
+This section is not applicable. The To-Do List System does not incorporate any machine learning or AI-driven components.
 
 ## 4. Verification
 💬 _Describes how each requirement will be verified to provide objective evidence of compliance._
 
 ➥ Outline verification methods (test, canary metrics, analysis, inspection, demonstration) and test evidence preferably in a matrix paralleling Section 3. Consider adding environment details, tools, and test data requirements.
 
-| Requirement ID | Verification Method | Test/Artifact Link | Status | Evidence           |
-|----------------|---------------------|--------------------|--------|--------------------|
-| REQ-FUNC-001   | test                | tests/UC01.md      | Passed | reports/tuc01.html |
-| REQ-SEC-003    | analysis            | threat-model.md    | WIP    |                    |
+| Requirement ID | Verification Method | Status |
+|----------------|---------------------|--------|
+| REQ-INT-001    | Inspection          | Passed |
+| REQ-INT-002    | Inspection          | Passed |
+| REQ-INT-003    | Inspection          | Passed |
+| REQ-INT-004    | Inspection          | Passed |
+| REQ-INT-005    | Test                | Passed |
+| REQ-FUNC-001   | Test                | Passed |
+| REQ-FUNC-002   | Test                | Passed |
+| REQ-FUNC-003   | Test                | Passed |
+| REQ-FUNC-004   | Inspection          | Passed |
+| REQ-FUNC-005   | Inspection          | Passed |
+| REQ-FUNC-006   | Test \| Inspection  | Passed |
+| REQ-FUNC-007   | Test \| Inspection  | Passed |
+| REQ-PERF-001   | Test \| Inspection  | Passed |
+| REQ-SEC-001    | Inspection          | Passed |
+| REQ-SEC-002    | Inspection          | Passed |
+| REQ-REL-001    | Inspection          | Passed |
+| REQ-AVAIL-001  | Inspection          | WIP    |
+| REQ-OBS-001    | Inspection          | Passed |
 
 💡 Tips:
 - Include both positive and negative tests and include non-functional verification (performance, security, reliability).
