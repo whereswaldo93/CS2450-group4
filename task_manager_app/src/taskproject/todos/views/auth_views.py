@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -6,8 +10,28 @@ from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
+if TYPE_CHECKING:
+    from django.contrib.auth.base_user import AbstractBaseUser
+    from django.contrib.auth.models import AnonymousUser
 
-def signup_view(request: HttpRequest) -> HttpResponse:
+    class AuthHttpRequest(HttpRequest):
+        """HttpRequest after AuthenticationMiddleware (has .user)."""
+
+        user: AbstractBaseUser | AnonymousUser
+
+else:
+    AuthHttpRequest = HttpRequest
+
+
+def signup_view(request: AuthHttpRequest) -> HttpResponse:
+    """Signup view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     if request.user.is_authenticated:
         return redirect("task_list")
     if request.method == "POST":
@@ -40,7 +64,15 @@ def signup_view(request: HttpRequest) -> HttpResponse:
     return render(request, "todos/signup.html", {"errors": [], "username": ""})
 
 
-def login_view(request: HttpRequest) -> HttpResponse:
+def login_view(request: AuthHttpRequest) -> HttpResponse:
+    """Login view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     if request.user.is_authenticated:
         return redirect("task_list")
     if request.method == "POST":

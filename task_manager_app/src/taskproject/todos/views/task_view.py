@@ -1,13 +1,23 @@
+from datetime import datetime, date
+from typing import Any
+
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
-from datetime import datetime, date
+
 from ..models import Task
-from django.http import JsonResponse
 
 
 def _count_overdue(tasks: list) -> int:
+    """Count overdue tasks for the todo app.
+
+    Args:
+        tasks (list): The list of tasks.
+
+    Returns:
+        int: The number of overdue tasks.
+    """
     today = date.today()
     n = 0
     for t in tasks:
@@ -19,6 +29,14 @@ def _count_overdue(tasks: list) -> int:
 
 
 def _summary_stats(tasks: list) -> dict:
+    """Summary stats for the todo app.
+
+    Args:
+        tasks (list): The list of tasks.
+
+    Returns:
+        dict: The summary stats object.
+    """
     return {
         "total": len(tasks),
         "pending": sum(1 for t in tasks if t.status == Task.Status.PENDING),
@@ -27,7 +45,17 @@ def _summary_stats(tasks: list) -> dict:
     }
 
 
-def task_list_page_context(request) -> dict:
+def task_list_page_context(
+    request: HttpRequest,
+) -> dict[str, Any | list[Task] | int | str | None]:
+    """Task list page context for the todo app.
+
+    Args:
+        request (HttpRequest): The request object.
+
+    Returns:
+        dict[str, Any | list[Task] | int | str | None]: The context object.
+    """
     qs = Task.objects.filter(user=request.user)  # pylint: disable=no-member
     tasks = list(qs)
     stats = _summary_stats(tasks)
@@ -75,17 +103,41 @@ def task_list_page_context(request) -> dict:
 
 
 @login_required
-def hello_html_view(request) -> HttpResponse:
+def hello_html_view(request: HttpRequest) -> HttpResponse:
+    """Hello HTML view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     return render(request, "todos/hello.html", task_list_page_context(request))
 
 
 @login_required
-def task_list(request) -> HttpResponse:
+def task_list(request: HttpRequest) -> HttpResponse:
+    """Task list view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     return render(request, "todos/tasks_list.html", task_list_page_context(request))
 
 
 @login_required
-def add_task(request):
+def add_task(request: HttpRequest) -> HttpResponse:
+    """Add task view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     if request.method == "POST":
         title = (request.POST.get("title") or "").strip()
         description = (request.POST.get("description") or "").strip()
@@ -146,7 +198,16 @@ def add_task(request):
 
 @login_required
 @require_http_methods(["POST"])
-def toggle_task(request, task_id):
+def toggle_task(request: HttpRequest, task_id: int) -> HttpResponse:
+    """Toggle task view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+        task_id (int): The task ID.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if task.status == Task.Status.PENDING:
         task.status = Task.Status.COMPLETED
@@ -157,7 +218,16 @@ def toggle_task(request, task_id):
 
 
 @login_required
-def edit_task(request, task_id):
+def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
+    """Edit task view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+        task_id (int): The task ID.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     task = get_object_or_404(Task, pk=task_id, user=request.user)
 
     if request.method == "POST":
@@ -229,14 +299,32 @@ def edit_task(request, task_id):
 
 
 @login_required
-def delete_task(request, task_id):
+def delete_task(request: HttpRequest, task_id: int) -> HttpResponse:
+    """Delete task view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+        task_id (int): The task ID.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     task.delete()
     return redirect("task_list")
 
 
 @login_required
-def complete_task(request, task_id):
+def complete_task(request: HttpRequest, task_id: int) -> HttpResponse:
+    """Complete task view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+        task_id (int): The task ID.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     task.status = Task.Status.COMPLETED
     task.save(update_fields=["status"])
@@ -244,7 +332,15 @@ def complete_task(request, task_id):
 
 
 @login_required
-def task_stats(request):
+def task_stats(request: HttpRequest) -> JsonResponse:
+    """Task stats view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+
+    Returns:
+        JsonResponse: The JSON response object.
+    """
     tasks = list(
         Task.objects.filter(user=request.user).order_by(
             "-id"
@@ -263,7 +359,16 @@ def task_stats(request):
 
 
 @login_required
-def note_create(request, task_id):
+def note_create(request: HttpRequest, task_id: int) -> HttpResponse:
+    """Note create view for the todo app.
+
+    Args:
+        request (AuthHttpRequest): The request object.
+        task_id (int): The task ID.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     task = get_object_or_404(Task, pk=task_id, user=request.user)
 
     if request.method == "POST":
