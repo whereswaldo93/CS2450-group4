@@ -1,4 +1,9 @@
-# CS2450 ToDo - Task Manager App
+# CS2450: Task Manager
+A comprehensive task management solution tailored for modern college student. This application bridges the gap between academic deadlines, personal wellness, and professional growth in one unified dashboard.
+
+### Key Features
+- **Academic Tracking**: Organize tasks by priority, due date and status.
+- **Restful API**:  Powered by Django REST Framework for seamless integration.
 
 ## Running Tests
 
@@ -62,3 +67,8 @@ This project requires the following dependencies to run:
 - **Django**: Django>=5.0,<6.1
 - **Django REST framework**: djangorestframework>=3.14,<4.0
 - **Production server**: gunicorn>=21.0
+- **Environment Management**: python-dotenv>=1.0,<2.0
+
+### Contributors
+- This project was developed by **Group 4** for the Spring 2026 CS2450 course:
+  - Javi Gutierrez, Kyle Bluemel, Jake Michie and Osvaldo Saldana
