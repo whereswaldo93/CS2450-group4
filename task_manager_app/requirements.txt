@@ -9,8 +9,5 @@ python-dotenv>=1.0,<2.0
 # Django REST framework (used in INSTALLED_APPS)
 djangorestframework>=3.14,<4.0
 
-# CLI (run from task_manager_app/src: python cli.py)
-typer[all]>=0.9.0
-
 # Production server (Render, etc.)
 gunicorn>=21.0
