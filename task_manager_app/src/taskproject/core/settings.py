@@ -135,3 +135,45 @@ STATIC_URL = "static/"
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/tasks"
 LOGOUT_REDIRECT_URL = "/login/"
+
+# LOGGING CONFIGURATION
+# Requirements: pip install python-json-logger
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        # JSON formatter for Production/External APIs
+        "json": {
+            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": "%(levelname)s %(asctime)s %(module)s %(message)s",
+        },
+        # Simple formatter for local development
+        "simple": {
+            "format": "[{levelname}] {asctime} {module}: {message}",
+            "style": "{",
+            "datefmt": "%H:%M:%S",
+        },
+
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            # Auto-switch formatter based on DEBUG mode
+            "formatter": "json" if not DEBUG else "simple",
+        },
+    },
+    "loggers": {
+        # Catch-all for Django internal logs
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        # Application-specific logger
+        "taskproject": {
+            "handlers": ["console"],
+            "level": "DEBUG" if DEBUG else "INFO",
+            "propagate": False,
+        },
+    },
+}

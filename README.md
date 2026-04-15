@@ -93,10 +93,11 @@ You can find the detailed report in the htmlcov directory. Open index.html in yo
 ---
 
 ### Dependencies
-- **Django**: Django>=5.0,<6.1
-- **Django REST framework**: djangorestframework>=3.14,<4.0
-- **Production server**: gunicorn>=21.0
-- **Environment Management**: python-dotenv>=1.0,<2.0
+- **Django**: `Django>=5.0,<6.1`
+- **Django REST framework**: `djangorestframework>=3.14,<4.0`
+- **Production server**: `gunicorn>=21.0`
+- **Environment Management**: `python-dotenv>=1.0,<2.0`
+- **JSON Logging**: `python-json-logger`
 
 ### Group 4 Contributors
   - Javi Gutierrez, Kyle Bluemel, Jake Michie and Osvaldo Saldana
