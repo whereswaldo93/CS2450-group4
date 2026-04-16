@@ -1,3 +1,4 @@
+import os
 from django.apps import AppConfig
 import logging
 import atexit
@@ -10,7 +11,10 @@ class TodosConfig(AppConfig):
 
     def ready(self):
         # Log a message when the app is ready to confirm it's loaded
-        logger.info("Task Manager is ready and loaded.")
+        if not os.path.exists("db.sqlite3"):
+            logger.critical("Database not found! Please run 'python manage.py migrate' to set up the database.")
+        else:
+            logger.info("Task Manager application startup initiated. Application is ready and loaded.")
 
         atexit.register(self.on_shutdown)
 
