@@ -15,5 +15,5 @@ class TodosConfig(AppConfig):
         atexit.register(self.on_shutdown)
 
     def on_shutdown(self):
-        # Log a message when the app is shutting down (if needed)
+        # Log a message when the app is shutting down
         logger.info("Task Manager is shutting down.")
