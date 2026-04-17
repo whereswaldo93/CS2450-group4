@@ -474,6 +474,15 @@
                 minusIcon.style.display = "none"; 
             }
         }
+        document.getElementById('due_date').addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); 
+            if (selectedDate < today) {
+                alert('Due date cannot be in the past.');
+                this.value = '';
+            }
+        });
     </script>
 </body>
 </html>
