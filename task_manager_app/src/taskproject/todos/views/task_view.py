@@ -138,7 +138,13 @@ def add_task(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
+    # DEBUG: Log the start of the add task process
+    logger.debug("User %s accessing add task page", request.user.id)
+
     if request.method == "POST":
+
+        #DEBUG: Log the form submission
+        logger.debug("POST data received for new task: %s", request.POST.dict())
 
         title = (request.POST.get("title") or "").strip()
         description = (request.POST.get("description") or "").strip()
@@ -155,16 +161,27 @@ def add_task(request: HttpRequest) -> HttpResponse:
             try:
                 due_date = datetime.strptime(due_date_raw, "%Y-%m-%d").date()
             except ValueError:
+                # WARNING: Log validation failures such as User error/Unexpected conditons
+                logger.warning(
+                    "Invalid date format submitted: %s",
+                    due_date_raw,
+                )
                 errors["due_date"] = "Invalid date format. Use YYYY-MM-DD."
+
             if due_date is not None and due_date < date.today():
+                # WARNING: Log validation failures such as User error/Unexpected conditons
+                logger.warning(
+                    "Attempted to submit due date in the past: %s",
+                    due_date,
+                )
                 errors["due_date"] = "Due date cannot be in the past."
 
         if errors:
             #WARNING: Log validation failures such as User error/Unexpected conditons
             logger.warning(
-                "Task '%s' creation validation failed", 
-                request.user.username, 
-                extra={"validation_errors": errors}
+                "Task creation validation failed for user %s: %s", 
+                request.user.id, 
+                errors
             )
             return render(
                 request,
@@ -189,18 +206,24 @@ def add_task(request: HttpRequest) -> HttpResponse:
                 status=Task.Status.PENDING,
                 notes=notes,
             )
+            #INFO: Log successful task creation and DB record change
             logger.info(
-                "Task %s created successfully",
+                "Task '%s' with ID %d, created successfully for user %s",
                 task.title,
+                task.id,
+                request.user.id
             )
             return redirect("task_list")
+        
         except Exception as e:
             #ERROR: Unexpected system failure during task creation to DB
             logger.error(
-                "Failed to create task in database for user: %s",
-                request.user.username,
+                "System failure during task creation for user %s: %s",
+                request.user.id,
+                str(e),
                 exc_info=True
             )
+            return HttpResponse("A database error occurred while creating the task. Please try again later.", status=500)
 
     return render(
         request,
@@ -254,10 +277,18 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
-    logger.debug("Attempting to edit task")
+    # DEBUG: Log the start of the edit process
+    logger.debug("User %s attempting to edit task %s",
+                request.user.id,
+                 task_id
+    )
+
     task = get_object_or_404(Task, pk=task_id, user=request.user)
 
     if request.method == "POST":
+        #DEBUG: Log the form submission
+        logger.debug("POST data received for task %s: %s", task_id, request.POST.dict())
+
         title = (request.POST.get("title") or "").strip()
         description = (request.POST.get("description") or "").strip()
         priority = (request.POST.get("priority") or "Medium").strip()
@@ -269,6 +300,14 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
             errors["title"] = "Title is required."
 
         if errors:
+            #WARNING: Log validation failures such as User error/Unexpected conditons
+            logger.warning(
+                "Task update validation failed for task %s by user %s: %s",
+                task_id,
+                request.user.id,
+                errors
+            )
+
             return render(
                 request,
                 "todos/edit_task.html",
@@ -288,6 +327,12 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
             try:
                 due_date = datetime.strptime(due_date_str, "%Y-%m-%d").date()
             except ValueError:
+                # WARNING: Log validation failures such as User error/Unexpected conditons
+                logger.warning(
+                    "Invalid due date format for task %s: %s",
+                    task_id,
+                    due_date_str,
+                )
                 errors["due_date"] = "Invalid date format. Use YYYY-MM-DD."
                 return render(
                     request,
@@ -304,17 +349,32 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
                 )
 
         #STATE CHANGE: Logging a database record update
-        task.title = title
-        task.description = description
-        task.priority = priority
-        task.due_date = due_date
-        task.notes = notes
-        task.save()
-        logger.info(
-            "Task '%s' updated successfully",
-            task.title,
-        )
-        return redirect("task_list")
+        try:
+            task.title = title
+            task.description = description
+            task.priority = priority
+            task.due_date = due_date
+            task.notes = notes
+            task.save()
+
+            #INFO: Log successful task update and DB record change
+            logger.info(
+                "Task %s ('%s') successfully updated by user %s",
+                task.id,
+                task.title,
+                request.user.id
+            )
+            return redirect("task_list")
+
+        except Exception as e:
+            #ERROR: Unexpected system failure during task update to DB
+            logger.error(
+                "Failed to update task %s in database: %s",
+                task_id,
+                str(e)
+            )
+            return HttpResponse("A database error occurred while updating the task. Please try again later.", status=500)
+
     return render(
         request,
         "todos/edit_task.html",
@@ -328,7 +388,6 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
             "notes": task.notes or "",
         },
     )
-
 
 @login_required
 def delete_task(request: HttpRequest, task_id: int) -> HttpResponse:
@@ -347,7 +406,7 @@ def delete_task(request: HttpRequest, task_id: int) -> HttpResponse:
 
     #INFO: Log task deletion
     logger.info(
-        "Task deleted: %s",
+        "Task '%s' deleted",
         task_title,
     )
     return redirect("task_list")
