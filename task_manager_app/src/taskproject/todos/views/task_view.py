@@ -139,6 +139,7 @@ def add_task(request: HttpRequest) -> HttpResponse:
         HttpResponse: The response object.
     """
     if request.method == "POST":
+
         title = (request.POST.get("title") or "").strip()
         description = (request.POST.get("description") or "").strip()
         priority = (request.POST.get("priority") or "Medium").strip()
@@ -161,7 +162,7 @@ def add_task(request: HttpRequest) -> HttpResponse:
         if errors:
             #WARNING: Log validation failures such as User error/Unexpected conditons
             logger.warning(
-                "Task  %s creation validation failed", 
+                "Task '%s' creation validation failed", 
                 request.user.username, 
                 extra={"validation_errors": errors}
             )
@@ -253,6 +254,7 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
+    logger.debug("Attempting to edit task")
     task = get_object_or_404(Task, pk=task_id, user=request.user)
 
     if request.method == "POST":
