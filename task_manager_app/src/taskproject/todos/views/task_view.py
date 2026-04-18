@@ -161,7 +161,7 @@ def add_task(request: HttpRequest) -> HttpResponse:
         if errors:
             #WARNING: Log validation failures such as User error/Unexpected conditons
             logger.warning(
-                "Task creation validation failed for user: %s", 
+                "Task  %s creation validation failed", 
                 request.user.username, 
                 extra={"validation_errors": errors}
             )
@@ -189,9 +189,8 @@ def add_task(request: HttpRequest) -> HttpResponse:
                 notes=notes,
             )
             logger.info(
-                "Task created successfully for user: %s",
+                "Task %s created successfully",
                 task.title,
-                extra={"user_id": request.user.id, "task_id": task.id}
             )
             return redirect("task_list")
         except Exception as e:
@@ -238,13 +237,8 @@ def toggle_task(request: HttpRequest, task_id: int) -> HttpResponse:
 
     #INFO: Log status change
     logger.info(
-        "Task status toggled",
-        extra={
-            "user_id": request.user.id,
-            "task_id": task.id,
-            "from": old_status,
-            "to": task.status,
-        }
+        "Task '%s' status toggled",
+        task.title,
     )
     return redirect("task_list")
 
@@ -315,9 +309,8 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
         task.notes = notes
         task.save()
         logger.info(
-            "Task updated successfully for user: %s",
+            "Task '%s' updated successfully",
             task.title,
-            extra={"user_id": request.user.id, "task_id": task.id}
         )
         return redirect("task_list")
     return render(
@@ -354,7 +347,6 @@ def delete_task(request: HttpRequest, task_id: int) -> HttpResponse:
     logger.info(
         "Task deleted: %s",
         task_title,
-        extra={"user_id": request.user.id, "task_id": task_id}
     )
     return redirect("task_list")
 
@@ -377,10 +369,7 @@ def complete_task(request: HttpRequest, task_id: int) -> HttpResponse:
     #INFO: Log status change
     logger.info(
         "Task marked as completed",
-        extra={
-            "user_id": request.user.id,
-            "task_id": task.id,
-        }
+        task.title,
     )
     return redirect("task_list")
 
