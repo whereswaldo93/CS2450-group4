@@ -25,7 +25,6 @@ SRC_DIR = BASE_DIR.parent
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -37,13 +36,12 @@ if not SECRET_KEY:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
+# Allow all hosts in development, but restrict in production via .env configuration.
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
     ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
 
-
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -54,7 +52,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "taskproject.todos",
 ]
-
+# Middleware configuration
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -65,8 +63,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# URL configuration
 ROOT_URLCONF = "core.urls"
 
+# Templates configuration
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -84,7 +84,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 # SQLite for Django (users and per-user tasks). CLI still uses JSON via TaskFileRepo in src/data/.
@@ -94,7 +93,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -114,7 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -126,7 +123,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
@@ -135,3 +131,55 @@ STATIC_URL = "static/"
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/tasks"
 LOGOUT_REDIRECT_URL = "/login/"
+
+# LOGGING CONFIGURATION
+# Requirements: pip install python-json-logger
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        # JSON formatter for Production/External APIs
+        "json": {
+            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": "%(levelname)s %(asctime)s %(module)s %(message)s",
+        },
+        # Simple formatter for local development
+        "simple": {
+            "format": "[{levelname}] {asctime} {module}: {message}",
+            "style": "{",
+            "datefmt": "%H:%M:%S",
+        },
+
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            # Auto-switch formatter based on DEBUG mode
+            "formatter": "json" if not DEBUG else "simple",
+        },
+    },
+    "loggers": {
+        # Catch-all for Django internal logs
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        # Application-specific logger
+        "taskproject": {
+            "handlers": ["console"],
+            "level": "DEBUG" if DEBUG else "INFO",
+            "propagate": False,
+        },
+    },
+}
+
+# Django REST Framework configuration
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}

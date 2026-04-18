@@ -1,12 +1,24 @@
 # CS2450: Task Manager
 A comprehensive task management solution tailored for modern college student. This application bridges the gap between academic deadlines, personal wellness, and professional growth in one unified dashboard.
 
-### Key Features
+## Table of Contents
+- [CS2450: Task Manager](#cs2450-task-manager)
+  - [Table of Contents](#table-of-contents)
+  - [Key Features](#key-features)
+  - [Logging \& Observability](#logging--observability)
+  - [Best Practices](#best-practices)
+  - [Running the Project](#running-the-project)
+  - [Installation \& Setup](#installation--setup)
+  - [Testing \& Coverage](#testing--coverage)
+  - [Dependencies](#dependencies)
+  - [Group 4 Contributors](#group-4-contributors)
+
+## Key Features
 - **Academic Tracking**: Organize tasks by priority, due date and status.
 - **Restful API**:  Powered by Django REST Framework for seamless integration.
 - **Structured Logging**: Meaningful traceability for debugging and maintenance.
 
-### Logging & Observability
+## Logging & Observability
 To ensure the application is maintainable and easy to debug, we using the following structured logging system.
 
 **Log Levels & Usage**
@@ -19,7 +31,7 @@ To ensure the application is maintainable and easy to debug, we using the follow
 | **ERROR** | Significant functional failures (e.g. database connection issues and 500 errors) |
 | **CRITICAL** | System-wide failures (e.g. server unable to start) |
 
-### Best Practices
+## Best Practices
 When adding logs to the project, import the standard logger and use the `extra` parameter to provide searchable context:
 ```python
 import logging
@@ -29,39 +41,36 @@ logger = logging.getLogger('task_manager')
 logger.info("Task status updated", extra={'task_id': 42, 'new_status': 'Completed'})
 ```
 ---
-### Running the Project
+## Running the Project
 **Prerequisites**
 
 - **Python**: 3.8 or higher.
 - **pip**: Package management tool.
 
-### Installation & Setup
-
-1. **Clone the repository**: 
+## Installation & Setup
 ```bash
-   git clone https://github.com/whereswaldo93/CS2450-group4
-   cd CS2450-group4
-```
+# Open a terminal (Command Prompt or PowerShell for Windows, Terminal for macOS or Linux)
 
-2. **Create and activate a virtual environment (optional)**:
-```bash
-   # Create a virtual environment
-   python -m venv venv
-   
-   # Activate the virtual environment
-   # On Windows
-   .\venv\Scripts\activate
+# Ensure Git is installed
+# Visit https://git-scm.com to download and install console Git if not already installed
 
-   # On macOS/Linux
-   source venv/bin/activate
-```
+# Clone the repository
+git clone https://github.com/whereswaldo93/CS2450-group4
 
-3. **Install dependencies**:
-```bash
-   pip install -r requirements.txt
+# Navigate to the project directory
+cd task_manager_app/
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Navigate to the server directory
+cd task_manager_app/src/taskproject
+
+# Run a local server
+python manage.py runserver
 ```
 ---
-### Testing & Coverage   
+## Testing & Coverage   
 
 **Running Unit Tests**
 
@@ -89,15 +98,18 @@ To run tests with coverage measurement, follow these steps:
 
 4. **Generate an HTML report for detailed coverage**:
 `coverage html`
-You can find the detailed report in the htmlcov directory. Open index.html in your web browser to view it.
+
 ---
 
-### Dependencies
-- **Django**: Django>=5.0,<6.1
-- **Django REST framework**: djangorestframework>=3.14,<4.0
-- **Production server**: gunicorn>=21.0
-- **Environment Management**: python-dotenv>=1.0,<2.0
+## Dependencies
+- **Django**: `Django>=5.0,<6.1`
+- **Django REST framework**: `djangorestframework>=3.14,<4.0`
+- **Production server**: `gunicorn>=21.0`
+- **Environment Management**: `python-dotenv>=1.0,<2.0`
+- **JSON Logging**: `python-json-logger`
 
-### Group 4 Contributors
+## Group 4 Contributors
   - Javi Gutierrez, Kyle Bluemel, Jake Michie and Osvaldo Saldana
 ---
+
+[Back to top](#top)

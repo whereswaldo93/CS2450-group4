@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-This API provides CRUD operations for managing to-do tasks.
+This API provides CRUD operations for managing to-do tasks. It is built using Django REST Framework
 
 * **Base URL:** `/api/`
 * **Format:** JSON
@@ -28,6 +28,7 @@ Represents a single to-do item.
   "notes": "Remember to check for discounts."
 }
 ```
+---
 
 ### Field Definitions
 
@@ -43,202 +44,66 @@ Represents a single to-do item.
 
 ---
 
-## 3. Endpoints
+### 3. Endpoints
 
-### 🔹 List All Tasks
+#### 🔹 List All Tasks
 
 **GET** `/api/tasks/`
+- Returns tasks belonging only to the authenticated user.
 
-#### Response
-
-```json
-[
-  {
-    "task_id": 1,
-    "title": "Buy groceries",
-    "description": "Eggs, milk, cheese",
-    "priority": "High",
-    "due_date": "2026-03-25",
-    "status": "Pending",
-  }
-]
-```
-
----
-
-### 🔹 Create Task
+#### 🔹 Create Task
 
 **POST** `/api/tasks/`
+- **Validation**: Returns 400 if `title` is missing or `due_date` is in the past.
+- **Logging**: Triggers an `INFO` log on successful DB creation.
 
-#### Request
+#### 🔹 Retrieve / Update / Delete
 
-```json
-{
-  "title": "Finish homework",
-  "description": "Math exercises",
-  "priority": "High",
-  "due_date": "2026-12-31"
-}
-```
-
-#### Response (201 Created)
-
-```json
-{
-  "task_id": 2,
-  "title": "Finish homework",
-  "description": "Math exercises",
-  "priority": "High",
-  "due_date": "2026-12-31",
-  "status": "Pending",
-}
-```
+- **GET** `/api/tasks/{task_id}/`
+- **PUT/PATCH** `/api/tasks/{task_id}/`
+- **DELETE** `/api/tasks/{task_id}/`
+- **Auth**: Returns 404 if the task exists but belongs to a different user
 
 ---
 
-### 🔹 Retrieve Single Task
+### 4. Status Codes & Error Handling
 
-**GET** `/api/tasks/{task_id}/`
+| Code | Meaning     | Usage |
+| ---- | ----------- | ----- |
+| 200  | OK          | Successful retrieval or update |
+| 201  | Created     | Successful task creation |
+| 204  | No Content  | Successful deletion |
+| 400  | Bad Request | Validation error |
+| 401  | Unauthorized| User is not logged in |
+| 404  | Not Found   | Task ID does not exist or is owned by another user |
+| 500  | Server Error| Logged as Error with stack trace |
+---
 
-#### Response
+### 5. Implementation Standards
 
-```json
-{
-  "task_id": 1,
-  "title": "Buy groceries",
-  "description": "Eggs, milk, cheese",
-  "priority": "High",
-  "due_date": "2026-03-25",
-  "status": "Pending",
-}
-```
+**Security & Ownership**
+- **Authentication**: All endpoints require valid session or token
+- **Isolation**: Users can only view, edit, or delete tasks where `task.user == request.user`
+
+**Logging Policy**
+All API interactions are logged under the taskproject namespace:
+- **Audit Trail**: Every `POST`, `PATCH`, and `DELETE` records the `user_id` and `task_id` for traceability.
+- **Visibility**: Environmnent-aware formatting, simple for development and JSON for production
 
 ---
 
-### 🔹 Update Task (Full)
+### 6. Current Enhancements
 
-**PUT** `/api/tasks/{task_id}/`
-
-#### Request
-
-```json
-{
-  "title": "Buy groceries and fruit",
-  "description": "Eggs, milk, apples",
-  "priority": "High",
-  "due_date": "2026-03-30",
-  "status": "Completed",
-}
-```
-
-#### Response
-
-```json
-{
-  "task_id": 1,
-  "title": "Buy groceries and fruit",
-  "description": "Eggs, milk, apples",
-  "priority": "High",
-  "due_date": "2026-03-30",
-  "status": "Completed",
-}
-```
+* User authentication integration
+* Task ownership enforcement
+* Structured logging for all CRUD operations
+* Validation for dates and required fields
 
 ---
 
-### 🔹 Partial Update
+### 7. Example Flow
 
-**PATCH** `/api/tasks/{task_id}/`
-
-#### Request
-
-```json
-{
-  "status": "Completed"
-}
-```
-
-#### Response
-
-```json
-{
-  "task_id": 1,
-  "status": "Completed",
-}
-```
-
----
-
-### 🔹 Delete Task
-
-**DELETE** `/api/tasks/{task_id}/`
-
-#### Response (204 No Content)
-
-```json
-{
-  "message": "Task deleted successfully"
-}
-```
-
----
-
-## 4. Status Codes
-
-| Code | Meaning     |
-| ---- | ----------- |
-| 200  | OK          |
-| 201  | Created     |
-| 204  | No Content  |
-| 400  | Bad Request |
-| 404  | Not Found   |
-
----
-
-## 5. Validation Rules
-
-* `title` is required
-* `title` must not exceed 255 characters
-* `description` is optional
-* `priority` must be one of the defined levels (e.g., Low, Medium, High).
-* `due_date` is optional but must be a valid date.
-
----
-
-## 6. URL Structure
-
-```
-/api/tasks/
-/api/tasks/{task_id}/
-```
-
----
-
-## 7. Future Enhancements
-
-* User authentication
-* Task ownership per user
-* Filtering
-* Editing tasks
-* Due dates and priorities
-
----
-
-## 8. Implementation Notes
-
-This contract will be implemented in:
-
-* `todos/views.py` → API logic
-* `todos/urls.py` → route definitions
-* `core/urls.py` → API entry point
-* Task model definition in models/task.py
-
----
-
-## 9. Example Flow
-
-```
-Client → GET /api/tasks/ → Retrieve all tasks
-Client → POST /api/tasks/ → Create a task
-Client → PATCH /api/tasks/1/ → Mark task complete
-```
+- **POST**: `/api/tasks/` → User creates "Math homework"
+- **GET**: `/api/tasks/` → User sees their list of active tasks
+- **PATCH**: `/api/tasks/` → User marks "Math homework" as `Completed`
+- **DELETE**: `/api/tasks/` → User removes the task

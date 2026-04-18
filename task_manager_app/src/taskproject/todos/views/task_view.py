@@ -1,13 +1,13 @@
 from datetime import datetime, date
 from typing import Any
-
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
-
 from ..models import Task
+import logging
 
+logger = logging.getLogger("taskproject.todos")
 
 def _count_overdue(tasks: list) -> int:
     """Count overdue tasks for the todo app.
@@ -159,6 +159,12 @@ def add_task(request: HttpRequest) -> HttpResponse:
                 errors["due_date"] = "Due date cannot be in the past."
 
         if errors:
+            #WARNING: Log validation failures such as User error/Unexpected conditons
+            logger.warning(
+                "Task creation validation failed for user: %s", 
+                request.user.username, 
+                extra={"validation_errors": errors}
+            )
             return render(
                 request,
                 "todos/add_task.html",
@@ -171,17 +177,31 @@ def add_task(request: HttpRequest) -> HttpResponse:
                     "notes": notes,
                 },
             )
+        #STATE CHANGE: Logging a new database record creation
+        try:
+            task = Task.objects.create(  # pylint: disable=no-member
+                user=request.user,
+                title=title,
+                description=description,
+                priority=priority,
+                due_date=due_date,
+                status=Task.Status.PENDING,
+                notes=notes,
+            )
+            logger.info(
+                "Task created successfully for user: %s",
+                task.title,
+                extra={"user_id": request.user.id, "task_id": task.id}
+            )
+            return redirect("task_list")
+        except Exception as e:
+            #ERROR: Unexpected system failure during task creation to DB
+            logger.error(
+                "Failed to create task in database for user: %s",
+                request.user.username,
+                exc_info=True
+            )
 
-        Task.objects.create(  # pylint: disable=no-member
-            user=request.user,
-            title=title,
-            description=description,
-            priority=priority,
-            due_date=due_date,
-            status=Task.Status.PENDING,
-            notes=notes,
-        )
-        return redirect("task_list")
     return render(
         request,
         "todos/add_task.html",
@@ -194,7 +214,6 @@ def add_task(request: HttpRequest) -> HttpResponse:
             "notes": "",
         },
     )
-
 
 @login_required
 @require_http_methods(["POST"])
@@ -209,13 +228,25 @@ def toggle_task(request: HttpRequest, task_id: int) -> HttpResponse:
         HttpResponse: The response object.
     """
     task = get_object_or_404(Task, pk=task_id, user=request.user)
+    old_status = task.status
+
     if task.status == Task.Status.PENDING:
         task.status = Task.Status.COMPLETED
     else:
         task.status = Task.Status.PENDING
     task.save(update_fields=["status"])
-    return redirect("task_list")
 
+    #INFO: Log status change
+    logger.info(
+        "Task status toggled",
+        extra={
+            "user_id": request.user.id,
+            "task_id": task.id,
+            "from": old_status,
+            "to": task.status,
+        }
+    )
+    return redirect("task_list")
 
 @login_required
 def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
@@ -276,12 +307,18 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
                     },
                 )
 
+        #STATE CHANGE: Logging a database record update
         task.title = title
         task.description = description
         task.priority = priority
         task.due_date = due_date
         task.notes = notes
         task.save()
+        logger.info(
+            "Task updated successfully for user: %s",
+            task.title,
+            extra={"user_id": request.user.id, "task_id": task.id}
+        )
         return redirect("task_list")
     return render(
         request,
@@ -310,7 +347,15 @@ def delete_task(request: HttpRequest, task_id: int) -> HttpResponse:
         HttpResponse: The response object.
     """
     task = get_object_or_404(Task, pk=task_id, user=request.user)
+    task_title = task.title
     task.delete()
+
+    #INFO: Log task deletion
+    logger.info(
+        "Task deleted: %s",
+        task_title,
+        extra={"user_id": request.user.id, "task_id": task_id}
+    )
     return redirect("task_list")
 
 
@@ -328,6 +373,15 @@ def complete_task(request: HttpRequest, task_id: int) -> HttpResponse:
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     task.status = Task.Status.COMPLETED
     task.save(update_fields=["status"])
+
+    #INFO: Log status change
+    logger.info(
+        "Task marked as completed",
+        extra={
+            "user_id": request.user.id,
+            "task_id": task.id,
+        }
+    )
     return redirect("task_list")
 
 
