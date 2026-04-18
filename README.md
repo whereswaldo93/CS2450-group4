@@ -1,6 +1,8 @@
 # CS2450: Task Manager
 A comprehensive task management solution tailored for modern college student. This application bridges the gap between academic deadlines, personal wellness, and professional growth in one unified dashboard.
 
+![Dashboard Preview](./task_manager_app/docs/images/dashboard.png)
+
 ## Table of Contents
 - [CS2450: Task Manager](#cs2450-task-manager)
   - [Table of Contents](#table-of-contents)
@@ -67,7 +69,7 @@ pip install -r requirements.txt
 cd task_manager_app/src/taskproject
 
 # Run a local server
-python manage.py runserver
+py manage.py runserver
 ```
 ---
 ## Testing & Coverage   
