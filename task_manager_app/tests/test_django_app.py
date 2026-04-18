@@ -11,12 +11,15 @@ django.setup()
 from todos.models import Task
 
 class TaskManagerDjangoTests(TestCase):
+    # TestCase class for testing the Django application, including user authentication and task management functionalities.
     def setUp(self):
+        # Set up the test environment by creating a test user and logging them in, allowing subsequent tests to interact with authenticated views.
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
         self.client.login(username='testuser', password='testpassword')
 
     def test_signup_creates_user(self):
+        #test case for signup view to ensure that a new user is created and logged in successfully, verifying the integration of the signup functionality with the user model and authentication system.
         """1. Integration Test: Verify the signup view successfully creates a new user and logs them in."""
         self.client.logout()
         
@@ -29,6 +32,7 @@ class TaskManagerDjangoTests(TestCase):
         self.assertTrue(User.objects.filter(username='newuser').exists())
 
     def test_unauthenticated_access_redirects(self):
+        #test case for security to ensure that unauthenticated users are redirected to the login page when trying to access protected views, verifying that the authentication system is properly enforcing access control.
         """2. Security Test: Verify that accessing protected views without logging in redirects to the login page."""
         self.client.logout()
         response = self.client.get(reverse('task_list'))
@@ -37,6 +41,7 @@ class TaskManagerDjangoTests(TestCase):
         self.assertRedirects(response, expected_url)
 
     def test_add_task_view(self):
+        #test case for add_task view to ensure that a new task is created in the database when a POST request is made to the add_task view, verifying the integration of the view with the Task model and the database.
         """3. Integration Test: Verify adding a task through the POST view creates a database entry."""
         task_data = {
             'title': 'Test Django Task',
@@ -56,6 +61,7 @@ class TaskManagerDjangoTests(TestCase):
         self.assertEqual(task.user, self.user)
 
     def test_toggle_task_status(self):
+        #test case for toggle_task view to ensure that the status of a task is correctly toggled between "Pending" and "Completed" when the toggle_task view is accessed, verifying the integration of the view with the Task model and the database.
         """4. Integration Test: Verify that the toggle_task view correctly flips a task's status."""
         task = Task.objects.create(
             title="Task to Toggle",
@@ -71,6 +77,7 @@ class TaskManagerDjangoTests(TestCase):
         self.assertEqual(task.status, 'Completed')
 
     def test_task_list_stats_context(self):
+        #test case for task_list view to ensure that the context data for total, pending, completed, and overdue tasks is correctly calculated and passed to the template, verifying the integration of the view with the Task model and the correctness of the dashboard statistics.
         """5. Unit/Integration Test: Verify the dashboard calculations for total, pending, completed, and overdue tasks."""
         Task.objects.create(title="Completed Task", user=self.user, status="Completed")
         Task.objects.create(title="Pending Task", user=self.user, status="Pending", due_date=date.today() + timedelta(days=2))
