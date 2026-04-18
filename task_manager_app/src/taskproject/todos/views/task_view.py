@@ -250,6 +250,13 @@ def toggle_task(request: HttpRequest, task_id: int) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
+
+    # Log the start of the toggle process
+    logger.debug("Toggle request received for task id %s by user %s", 
+        task_id, 
+        request.user.id,
+    )
+
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     old_status = task.status
 
@@ -257,14 +264,29 @@ def toggle_task(request: HttpRequest, task_id: int) -> HttpResponse:
         task.status = Task.Status.COMPLETED
     else:
         task.status = Task.Status.PENDING
-    task.save(update_fields=["status"])
 
-    #INFO: Log status change
-    logger.info(
-        "Task '%s' status toggled",
-        task.title,
-    )
-    return redirect("task_list")
+    try:    
+        task.save(update_fields=["status"])
+
+        # Log status change success
+        logger.info(
+            "Task %s status changed from %s to %s by user %s",
+            task.id,
+            old_status,
+            task.status,
+            request.user.id
+        )
+        return redirect("task_list")
+    
+    except Exception as e:
+        # Unexpected system failure during task status update to DB
+        logger.error(
+            "Failed to toggle status for task %s:: %s",
+            task_id,
+            str(e),
+            exc_info=True
+        )
+        return HttpResponse("A database error occurred while updating the task status. Please try again later.", status=500)
 
 @login_required
 def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
