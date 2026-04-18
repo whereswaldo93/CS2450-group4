@@ -1,5 +1,5 @@
 # CS2450: Task Manager
-A comprehensive task management solution tailored for modern college student. This application bridges the gap between academic deadlines, personal wellness, and professional growth in one unified dashboard.
+A comprehensive task management solution tailored for modern the college student. This application bridges the gap between academic deadlines, personal wellness, and professional growth in one unified dashboard.
 
 ![Dashboard Preview](./task_manager_app/docs/images/dashboard.png)
 
