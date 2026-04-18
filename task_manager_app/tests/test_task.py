@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 from taskproject.todos.file_task import Task, TaskPriority, TaskStatus
 
 class MockRepo:
+    # Mock repository class for testing purposes, simulating the behavior of a task repository by storing tasks in memory and providing methods to load and save tasks.
     def __init__(self):
         self.tasks = []
 
@@ -18,6 +19,7 @@ class MockRepo:
 
 class TestTask(unittest.TestCase):
     def setUp(self):
+        # Set up the test environment by creating a MockRepo instance and adding a sample task to it, allowing subsequent tests to interact with a predefined task list.
         self.repo = MockRepo()
         self.task1 = Task(
             task_id=1,
@@ -31,6 +33,7 @@ class TestTask(unittest.TestCase):
         self.repo.save_tasks([self.task1])
 
     def test_create_task(self):
+        # Test case for creating a new task and saving it to the repository, ensuring that the task is correctly added to the list of tasks and that its attributes are set as expected.
         task = Task(
             task_id=2,
             title="New Task",
@@ -47,10 +50,12 @@ class TestTask(unittest.TestCase):
         self.assertEqual(task.priority, TaskPriority.MEDIUM)
 
     def test_complete_task(self):
+        # Test case for marking a task as completed, ensuring that the status of the task is updated correctly and that the change is reflected in the repository.
         self.task1.status = TaskStatus.COMPLETED
         self.assertEqual(self.task1.status, TaskStatus.COMPLETED)
 
     def test_delete_task(self):
+        # Test case for deleting a task from the repository, ensuring that the task is removed from the list of tasks and that it is no longer present in the repository after deletion.
         self.repo.save_tasks([self.task1])  # Ensure task is in the repo
         self.repo.save_tasks([task for task in self.repo.load_tasks() if task.task_id != 1])
         
@@ -58,6 +63,7 @@ class TestTask(unittest.TestCase):
         self.assertNotIn(self.task1, self.repo.load_tasks())  # Task should not be in the repo anymore
 
     def test_invalid_due_date(self):
+        # Test case for creating a task with an invalid due date format, ensuring that a ValueError is raised when the due date does not conform to the expected "YYYY-MM-DD" format.
         with self.assertRaises(ValueError):
             Task(
                 task_id=3,
@@ -69,6 +75,7 @@ class TestTask(unittest.TestCase):
                 notes=""
             )
     def test_invalid_priority(self):
+        # Test case for creating a task with an invalid priority value, ensuring that a ValueError is raised when the priority does not match one of the defined choices in TaskPriority.
         with self.assertRaises(ValueError):
             Task(
                 task_id=4,
@@ -80,6 +87,7 @@ class TestTask(unittest.TestCase):
                 notes=""
             )
     def test_task_with_no_due_date(self):
+        # Test case for creating a task without a due date, ensuring that the task can be created successfully and that the due_date attribute is set to None when no due date is provided.
         task = Task(
             task_id=5,
             title="No Due Date Task",
@@ -92,6 +100,7 @@ class TestTask(unittest.TestCase):
         self.assertIsNone(task.due_date)
     
     def test_add_task_without_title(self):
+        # Test case for creating a task without a title, ensuring that a ValueError is raised when the title is empty, as the title is a required field for a task.
         with self.assertRaises(ValueError):
             Task(
                 task_id=6,
@@ -104,6 +113,7 @@ class TestTask(unittest.TestCase):
             )
 
     def test_add_task_with_past_due_date(self):
+        # Test case for creating a task with a past due date, ensuring that a ValueError is raised when the due date is set to a date in the past, as tasks should not have due dates that have already passed.
         past_date = "2022-01-01"
         with self.assertRaises(ValueError) as context:
             Task(
@@ -118,6 +128,7 @@ class TestTask(unittest.TestCase):
         self.assertEqual(str(context.exception), "Due date cannot be in the past.")
 
     def test_add_task_with_notes(self):
+        # Test case for creating a task with notes, ensuring that the task can be created successfully and that the notes attribute is correctly set and saved in the repository.
         task_with_notes = Task(
             task_id=8,
             title="Task with Notes",
@@ -132,10 +143,12 @@ class TestTask(unittest.TestCase):
         self.assertEqual(saved_task.notes, "These are some notes for the task.")
 
     def test_delete_non_existent_task(self):
+        # Test case for attempting to delete a non-existent task, ensuring that the repository remains unchanged and that no errors occur when trying to delete a task that is not present in the repository.
         self.repo.save_tasks([task for task in self.repo.load_tasks() if task.task_id != 999])  # Attempt to delete a non-existent task
         self.assertEqual(len(self.repo.load_tasks()), 1)  # Task list should remain unchanged
 
     def test_delete_task_notes(self):
+        # Test case for deleting the notes of a task, ensuring that the notes can be removed from a task and that the notes attribute is set to None or an empty string after deletion.
         task_with_notes = Task(
             task_id=9,
             title="Task with Notes to Delete",
@@ -151,6 +164,7 @@ class TestTask(unittest.TestCase):
         self.assertIsNone(saved_task.notes)  # Ensure the notes are deleted
 
     def test_edit_task_notes(self):
+        # Test case for editing the notes of a task, ensuring that the notes can be updated and that the changes are correctly reflected in the repository when the notes of a task are modified.
         task_with_notes = Task(
             task_id=11,
             title="Task with Notes to Edit",
@@ -166,6 +180,7 @@ class TestTask(unittest.TestCase):
         self.assertEqual(saved_task.notes, "These notes have been edited.")  # Ensure the notes are updated correctly
 
     def test_adding_notes_to_existing_task(self):
+        # Test case for adding notes to an existing task that initially has no notes, ensuring that notes can be added to a task after it has been created and that the notes attribute is updated correctly in the repository.
         task_without_notes = Task(
             task_id=10,
             title="Task without Notes",

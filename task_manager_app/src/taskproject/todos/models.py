@@ -1,25 +1,19 @@
-from __future__ import annotations
-
-import datetime
-from typing import ClassVar
-
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.manager import Manager
+from django.core.exceptions import ValidationError
 from django.utils import timezone
-
+import datetime
 
 class Task(models.Model):
-    # Typed default manager so static analysis recognizes `.objects` / `.create()`.
-    objects: ClassVar[Manager[Task]] = models.Manager()
-
+    #Over all class for task with all the fields and validation for the task model
     class Priority(models.TextChoices):
+        # Define priority levels for tasks
         LOW = "Low", "Low"
         MEDIUM = "Medium", "Medium"
         HIGH = "High", "High"
 
     class Status(models.TextChoices):
+        # Define status options for tasks
         PENDING = "Pending", "Pending"
         COMPLETED = "Completed", "Completed"
 
@@ -44,14 +38,17 @@ class Task(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     class Meta:
+        # Set default ordering for tasks (newest first)
         ordering = ["-id"]
 
     def __str__(self) -> str:
+        # Return the title of the task as its string representation
         return self.title
     
-    def clean(self):
+    def clean(self) -> None:
+        #Perform custom validation for the Task model fields raiseing ValidationError if any validation fails.
         # Validate that the due date is not in the past
-        if self.due_date and self.due_date < timezone.now().date():
+        if self.due_date and self.due_date < timezone.now().date() and not self.pk:
             raise ValidationError("Due date cannot be in the past.")
         
         # Validate that the title is not empty
@@ -74,5 +71,6 @@ class Task(models.Model):
             raise ValidationError(f"Status must be one of: {', '.join(self.Status.values)}.")  
         
     def save(self, *args, **kwargs):
+        # Override the save method to perform validation before saving the model instance to the database.
         self.full_clean()  # This will call the clean() method to validate the model before saving
         super().save(*args, **kwargs)

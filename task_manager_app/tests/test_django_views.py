@@ -27,10 +27,12 @@ from todos.models import Task
 # ---------------------------------------------------------------------------
 
 def make_user(username="javi", password="TestPass123!"):
+    # Helper function to create a user with the given username and password, returning the created User object.
     return User.objects.create_user(username=username, password=password)
 
 
 def make_task(user, **kwargs):
+    # Helper function to create a task for a given user with default values that can be overridden by kwargs, returning the created Task object.
     defaults = dict(
         title="Sample Task",
         description="A description",
