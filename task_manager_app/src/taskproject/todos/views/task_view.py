@@ -468,16 +468,48 @@ def complete_task(request: HttpRequest, task_id: int) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
-    task = get_object_or_404(Task, pk=task_id, user=request.user)
-    task.status = Task.Status.COMPLETED
-    task.save(update_fields=["status"])
 
-    #INFO: Log status change
-    logger.info(
-        "Task marked as completed",
-        task.title,
+    # Log the start of the complete process
+    logger.debug("User %s attempting to mark task %s as completed",
+        request.user.id,
+        task_id
     )
-    return redirect("task_list")
+
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+
+    if task.status == Task.Status.COMPLETED:
+        # Log attempt to complete an already completed task
+        logger.warning(
+            "User %s attempted to mark task %s as completed, but it is already completed.",
+            request.user.id,
+            task_id
+        )
+        return redirect("task_list")
+    
+    try:
+        task.status = Task.Status.COMPLETED
+        task.save(update_fields=["status"])
+
+        # Log status change success
+        logger.info(
+            "Task %s with ID %s marked as completed by user %s",
+            task.id,
+            task.title,
+            request.user.id
+        )
+        return redirect("task_list")
+    
+    except Exception as e:
+        # Log unexpected system failure during task status update to DB
+        logger.error(
+            "Failed to mark task %s with ID %s as completed for user %s: %s",
+            task.title,
+            task_id,
+            request.user.id,
+            str(e),
+            exc_info=True
+        )
+        return HttpResponse("A database error occurred while updating the task status. Please try again later.", status=500)
 
 
 @login_required
@@ -490,21 +522,48 @@ def task_stats(request: HttpRequest) -> JsonResponse:
     Returns:
         JsonResponse: The JSON response object.
     """
-    tasks = list(
-        Task.objects.filter(user=request.user).order_by(
-            "-id"
-        )  # pylint: disable=no-member
-    )
-    total = len(tasks)
-    pending = sum(1 for t in tasks if t.status == Task.Status.PENDING)
-    completed = sum(1 for t in tasks if t.status == Task.Status.COMPLETED)
-    return JsonResponse(
-        {
-            "total": total,
-            "pending": pending,
-            "completed": completed,
-        }
-    )
+
+    # Log the access to the stats endpoint
+    logger.debug("User %s accessing task stats endpoint", request.user.id)
+
+    try:
+        # Log the database query for stats retrieval
+        tasks = list(
+            Task.objects.filter(user=request.user).order_by("-id")  # pylint: disable=no-member
+        )
+
+        total = len(tasks)
+        pending = sum(1 for t in tasks if t.status == Task.Status.PENDING)
+        completed = sum(1 for t in tasks if t.status == Task.Status.COMPLETED)
+
+        # Log the successful retrieval of stats
+        logger.info(
+            "Task stats retrieved successfully for user %s: total=%d, pending=%d, completed=%d",
+            request.user.id,
+            total,
+            pending,
+            completed
+        )
+
+        return JsonResponse(
+            {
+                "total": total,
+                "pending": pending,
+                "completed": completed,
+            }
+        )
+    except Exception as e:
+        # Log unexpected system failure during stats retrieval from DB
+        logger.error(
+            "Failed to retrieve task stats for user %s: %s",
+            request.user.id,
+            str(e),
+            exc_info=True
+        )
+        return JsonResponse(
+            {"A database error occurred while retrieving task stats. Please try again later."},
+            status=500
+        )
 
 
 @login_required
@@ -518,12 +577,55 @@ def note_create(request: HttpRequest, task_id: int) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
+
+    # Log the access to the note creation endpoint
+    logger.debug("User %s accessing note creation for task %s", 
+        request.user.id, 
+        task_id
+    )
+
     task = get_object_or_404(Task, pk=task_id, user=request.user)
 
     if request.method == "POST":
-        notes = request.POST.get("notes", "").strip()
+        # Log the raw payload submission for note creation
+        logger.debug("POST data received for note creation for task %s: %s",
+            task_id,
+            request.POST.dict()
+        )
+
+        notes = request.POST.get("notes", "").strip() 
+
         if notes:
-            task.notes = notes
-            task.save(update_fields=["notes"])
-            return redirect("task_list")
+            # Logging a database record update for task notes
+            try:
+                task.notes = notes
+                task.save(update_fields=["notes"])
+
+                # Log successful note creation and DB record change
+                logger.info(
+                    "Note for task %s with ID %s updated successfully by user %s",
+                    task.title,
+                    task_id,
+                    request.user.id
+                )
+                return redirect("task_list")
+            
+            except Exception as e:
+                # Log unexpected system failure during note update to DB
+                logger.error(
+                    "Database failure while saving note for task %s with ID %s for user %s: %s",
+                    task.title,
+                    task_id,
+                    request.user.id,
+                    str(e),
+                    exc_info=True
+                )
+                return HttpResponse("A database error occurred while creating the note. Please try again later.", status=500)
+        # Log if note content is empty and note creation is skipped
+        logger.debug(
+            "Empty note content submitted for task %s with ID %s by user %s.",
+            task.title,
+            task_id,
+            request.user.id
+        )
     return render(request, "todos/note_list.html", {"task": task})
