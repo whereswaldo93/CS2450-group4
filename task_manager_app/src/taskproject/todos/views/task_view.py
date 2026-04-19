@@ -18,6 +18,8 @@ def _count_overdue(tasks: list) -> int:
     Returns:
         int: The number of overdue tasks.
     """
+    #
+
     today = date.today()
     n = 0
     for t in tasks:
@@ -56,9 +58,20 @@ def task_list_page_context(
     Returns:
         dict[str, Any | list[Task] | int | str | None]: The context object.
     """
+
+    # Log the database query for task list retrieval
+    logger.debug("Querying database for task list for user %s", request.user.id)
+
     qs = Task.objects.filter(user=request.user)  # pylint: disable=no-member
     tasks = list(qs)
     stats = _summary_stats(tasks)
+
+    # Log the successful retrieval of task list from DB
+    logger.info(
+        "Task list retrieved successfully for user %s: %d tasks found",
+        request.user.id,
+        len(tasks)
+    )
 
     filter_status = request.GET.get("status", "all")
     filter_priority = request.GET.get("priority", "all")
@@ -75,12 +88,22 @@ def task_list_page_context(
     elif filter_priority == "High":
         tasks = [t for t in tasks if t.priority == Task.Priority.HIGH]
 
+    # Log the applied filters for task list retrieval
+    logger.debug("Applied filters for task list retrieval for user %s: status=%s, priority=%s",
+        request.user.id,
+        filter_status,
+        filter_priority
+    )
+
     sort_by = request.GET.get("sort", "id")
     priority_order = {
         Task.Priority.HIGH: 0,
         Task.Priority.MEDIUM: 1,
         Task.Priority.LOW: 2,
     }
+
+    # Log the sorting criteria for task list retrieval
+    logger.debug("Sorting task list for user %s by %s", request.user.id, filter_status)
 
     if sort_by == "priority":
         tasks = sorted(tasks, key=lambda t: priority_order.get(t.priority, 99))
@@ -93,6 +116,13 @@ def task_list_page_context(
     else:
         tasks = sorted(tasks, key=lambda t: t.pk, reverse=True)
 
+    # Log the applied sorting for task list retrieval
+    logger.debug("Applied sorting for task list retrieval for user %s: sort_by=%s, priority=%s",
+        request.user.id,
+        filter_status,
+        filter_priority
+    )
+
     return {
         "tasks": tasks,
         "filter_status": filter_status,
@@ -100,7 +130,6 @@ def task_list_page_context(
         "sort_by": sort_by,
         **stats,
     }
-
 
 @login_required
 def hello_html_view(request: HttpRequest) -> HttpResponse:
@@ -112,8 +141,10 @@ def hello_html_view(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
-    return render(request, "todos/hello.html", task_list_page_context(request))
 
+    # Log the access to the hello page
+    logger.debug("User %s accessing hello page", request.user.id)
+    return render(request, "todos/hello.html", task_list_page_context(request))
 
 @login_required
 def task_list(request: HttpRequest) -> HttpResponse:
@@ -125,8 +156,10 @@ def task_list(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
-    return render(request, "todos/tasks_list.html", task_list_page_context(request))
 
+    # Log the access to the task list page
+    logger.debug("User %s accessing task list page", request.user.id)
+    return render(request, "todos/tasks_list.html", task_list_page_context(request))
 
 @login_required
 def add_task(request: HttpRequest) -> HttpResponse:
@@ -511,7 +544,6 @@ def complete_task(request: HttpRequest, task_id: int) -> HttpResponse:
         )
         return HttpResponse("A database error occurred while updating the task status. Please try again later.", status=500)
 
-
 @login_required
 def task_stats(request: HttpRequest) -> JsonResponse:
     """Task stats view for the todo app.
@@ -564,7 +596,6 @@ def task_stats(request: HttpRequest) -> JsonResponse:
             {"A database error occurred while retrieving task stats. Please try again later."},
             status=500
         )
-
 
 @login_required
 def note_create(request: HttpRequest, task_id: int) -> HttpResponse:
