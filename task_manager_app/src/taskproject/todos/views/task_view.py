@@ -422,16 +422,39 @@ def delete_task(request: HttpRequest, task_id: int) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
+
+    # Log the start of the delete process
+    logger.debug("User %s attempting to delete task %s",
+        request.user.id,
+        task_id
+    )
+
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     task_title = task.title
-    task.delete()
 
-    #INFO: Log task deletion
-    logger.info(
-        "Task '%s' deleted",
-        task_title,
-    )
-    return redirect("task_list")
+    try:
+        task.delete()
+
+        # Log task deletion
+        logger.info(
+            "Tasks %s with ID %s deleted by user %s",
+            task_title,
+            task_id,
+            request.user.id
+        )
+        return redirect("task_list")
+
+    except Exception as e:
+        # Log unexpected system failure during task deletion from DB
+        logger.error(
+            "Failed to delete task %s with ID %s for user %s with the following error: %s", 
+            task_title,
+            task_id,
+            request.user.id,
+            str(e),
+            exc_info=True
+        )
+        return HttpResponse("A database error occurred while deleting the task. Please try again later.", status=500)
 
 
 @login_required
