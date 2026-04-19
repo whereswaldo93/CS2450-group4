@@ -35,13 +35,27 @@ def signup_view(request: AuthHttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
+
+    # Initial entry
+    logger.debug(
+        "Signup page accessed successfully with authenticated status %s",
+        request.user.is_authenticated
+    )
+
     if request.user.is_authenticated:
         return redirect("task_list")
+    
     if request.method == "POST":
+        # Log payload without sensitive info
+        logger.debug(
+            "Signup attempt for username: %s", request.POST.get("username")
+        )
+
         username = (request.POST.get("username") or "").strip()
         password1 = request.POST.get("password1") or ""
         password2 = request.POST.get("password2") or ""
         errors: list[str] = []
+
         if not username:
             errors.append("Username is required.")
         if not password1:
@@ -53,15 +67,18 @@ def signup_view(request: AuthHttpRequest) -> HttpResponse:
                 validate_password(password1, User(username=username))
             except ValidationError as e:
                 errors.extend(e.messages)
+
         if User.objects.filter(username=username).exists():
-            errors.append("That username is already taken.")
+            # Potential common user error
+            logger.warning("Signup attempt with existing username %s", username)
+            errors.append("Username is already taken.")
 
         if errors:
-            # WARNING: Log validation failures such as User error/Unexpected conditons
+            # Log validation failures such as User error/Unexpected conditons
             logger.warning(
-                "Signup validation failed for user: %s", 
+                "Signup validation failed for user %s with error: %s", 
                 username, 
-                extra={"validation_errors": errors}
+                errors
             )
             return render(
                 request,
@@ -70,20 +87,30 @@ def signup_view(request: AuthHttpRequest) -> HttpResponse:
             )
         
         try:
-            #STATE CHANGE: Logging a new database record creation
+            # Logging a new database record creation
             user = User.objects.create_user(username=username, password=password1)
+
+            # New user successfully created
+            logger.info("New user %s account created with ID: %s",
+                username,
+                request.user.id
+            )
+
             login(request, user)
+
+            # Starting session after login
             logger.info(
-                "New user created: %s", 
-                username, 
-                extra={"user_id": user.id}
+                "User %s logged in after sign up", 
+                username
             )
             return redirect("task_list")
+        
         except Exception as e:
-            # ERROR: Unexpected system failure during user creation to DB
+            # Unexpected system failure during user creation to DB
             logger.error(
-                "Critical error occurred while creating user: %s", 
-                username, 
+                "Critical error occurred while creating user %s: %s", 
+                username,
+                str(e),
                 exc_info=True
             )
             return render(
@@ -108,25 +135,36 @@ def login_view(request: AuthHttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: The response object.
     """
+
+    # Track entry and session state
+    logger.debug("Login page accessed with authenticated user %s", request.user.is_authenticated)
+
     if request.user.is_authenticated:
         return redirect("task_list")
+    
     if request.method == "POST":
         username = (request.POST.get("username") or "").strip()
         password = request.POST.get("password") or ""
+
+        # Log the intenttn of creating username and password, not the pasword itself
+        logger.debug("Login attempt started for user %s", username)
+
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
-            #INFO: Log key user action
+
+            # Log key user action
             logger.info(
-                "User logged in: %s", 
+                "User %s with ID %s successfully logged in", 
                 username, 
-                extra={"user_id": user.id}
+                request.user.id
             )
             return redirect("task_list")
         else:
-            #WARNING: Log failed login attempt, potential security concern
+            # Log failed login attempt, potential security concern
             logger.warning(
-                "Failed login attempt for username: %s", 
+                "Failed login attempt for user %s", 
                 username
             )
         messages.error(request, "Invalid username or password.")
