@@ -46,7 +46,7 @@ def _summary_stats(tasks: list) -> dict:
         dict: The summary stats object.
     """
     # Log the input size
-    logger.debug("Summary of stats for %s tasks", len(tasks))
+    logger.debug("Summary of stats is %s tasks", len(tasks))
 
     stats = {
         "total": len(tasks),
@@ -79,13 +79,6 @@ def task_list_page_context(
     qs = Task.objects.filter(user=request.user)  # pylint: disable=no-member
     tasks = list(qs)
     stats = _summary_stats(tasks)
-
-    # Log the successful retrieval of task list from DB
-    logger.info(
-        "Task list retrieved successfully for user %s: %d tasks found",
-        request.user.id,
-        len(tasks)
-    )
 
     filter_status = request.GET.get("status", "all")
     filter_priority = request.GET.get("priority", "all")
@@ -126,13 +119,6 @@ def task_list_page_context(
         tasks = sorted(tasks, key=lambda t: t.title.lower())
     else:
         tasks = sorted(tasks, key=lambda t: t.pk, reverse=True)
-
-    # Log the applied sorting for task list retrieval
-    logger.debug("Applied sorting for task list retrieval for user %s: sort_by=%s, priority=%s",
-        request.user.id,
-        filter_status,
-        filter_priority
-    )
 
     return {
         "tasks": tasks,

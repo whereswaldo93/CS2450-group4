@@ -136,9 +136,6 @@ def login_view(request: AuthHttpRequest) -> HttpResponse:
         HttpResponse: The response object.
     """
 
-    # Track entry and session state
-    logger.debug("Login page accessed with authenticated user %s", request.user.is_authenticated)
-
     if request.user.is_authenticated:
         return redirect("task_list")
     
