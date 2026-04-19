@@ -18,15 +18,21 @@ def _count_overdue(tasks: list) -> int:
     Returns:
         int: The number of overdue tasks.
     """
-    #
-
     today = date.today()
+
+    # Log the date we are comparing against
+    logger.debug("Checking for overdue tasks relative to today's date %s", today)
+
     n = 0
     for t in tasks:
         if t.status != Task.Status.PENDING or not t.due_date:
             continue
         if t.due_date < today:
             n += 1
+
+    # Helps verify if the overdue logic is filtering correctly
+    logger.debug("Found %s overdue tasks out of %s total", n, len(tasks))
+
     return n
 
 
@@ -39,12 +45,20 @@ def _summary_stats(tasks: list) -> dict:
     Returns:
         dict: The summary stats object.
     """
-    return {
+    # Log the input size
+    logger.debug("Summary of stats for %s tasks", len(tasks))
+
+    stats = {
         "total": len(tasks),
         "pending": sum(1 for t in tasks if t.status == Task.Status.PENDING),
         "completed": sum(1 for t in tasks if t.status == Task.Status.COMPLETED),
         "overdue": _count_overdue(tasks),
     }
+
+    # Log the result
+    logger.debug("Stats calculated: %s", stats)
+
+    return stats
 
 
 def task_list_page_context(
@@ -101,9 +115,6 @@ def task_list_page_context(
         Task.Priority.MEDIUM: 1,
         Task.Priority.LOW: 2,
     }
-
-    # Log the sorting criteria for task list retrieval
-    logger.debug("Sorting task list for user %s by %s", request.user.id, filter_status)
 
     if sort_by == "priority":
         tasks = sorted(tasks, key=lambda t: priority_order.get(t.priority, 99))
