@@ -1,5 +1,5 @@
 # CS2450: Task Manager
-A comprehensive task management solution tailored for modern the college student. This application bridges the gap between academic deadlines, personal wellness, and professional growth in one unified dashboard.
+A comprehensive task management solution tailored for the modern college student. This application bridges the gap between academic deadlines, personal wellness, and professional growth in one unified dashboard.
 
 ![Dashboard Preview](./task_manager_app/docs/images/dashboard.png)
 
@@ -7,10 +7,9 @@ A comprehensive task management solution tailored for modern the college student
 - [CS2450: Task Manager](#cs2450-task-manager)
   - [Table of Contents](#table-of-contents)
   - [Key Features](#key-features)
-  - [Logging \& Observability](#logging--observability)
-  - [Best Practices](#best-practices)
-  - [Running the Project](#running-the-project)
+  - [Getting Started](#getting-started)
   - [Installation \& Setup](#installation--setup)
+  - [Logging \& Observability](#logging--observability)
   - [Testing \& Coverage](#testing--coverage)
   - [Dependencies](#dependencies)
   - [Group 4 Contributors](#group-4-contributors)
@@ -20,30 +19,7 @@ A comprehensive task management solution tailored for modern the college student
 - **Restful API**:  Powered by Django REST Framework for seamless integration.
 - **Structured Logging**: Meaningful traceability for debugging and maintenance.
 
-## Logging & Observability
-To ensure the application is maintainable and easy to debug, we using the following structured logging system.
-
-**Log Levels & Usage**
-
-| **Level** | **Usage Criteria** |
-| --------- | ------------------ |
-| **DEBUG** | Granular details for developers (e.g. raw API payloads and internal state)|
-| **INFO**  | Key lifecycle events (e.g. App startup, successful DB writes, and user actions) |
-| **WARNING** | Handled errors or unexpected behavior (e.g. failed logins and slow responses) |
-| **ERROR** | Significant functional failures (e.g. database connection issues and 500 errors) |
-| **CRITICAL** | System-wide failures (e.g. server unable to start) |
-
-## Best Practices
-When adding logs to the project, import the standard logger and use the `extra` parameter to provide searchable context:
-```python
-import logging
-logger = logging.getLogger('task_manager')
-
-# Example: Logging a state change
-logger.info("Task status updated", extra={'task_id': 42, 'new_status': 'Completed'})
-```
----
-## Running the Project
+## Getting Started
 **Prerequisites**
 
 - **Python**: 3.8 or higher.
@@ -71,6 +47,20 @@ cd task_manager_app/src/taskproject
 # Run a local server
 py manage.py runserver
 ```
+
+## Logging & Observability
+To ensure the application is maintainable and easy to debug, we using the following structured logging system.
+
+**Log Levels & Usage**
+
+| **Level** | **Usage Criteria** |
+| --------- | ------------------ |
+| **DEBUG** | Granular details for developers (e.g. raw API payloads and internal state)|
+| **INFO**  | Key lifecycle events (e.g. App startup, successful DB writes, and user actions) |
+| **WARNING** | Handled errors or unexpected behavior (e.g. failed logins and slow responses) |
+| **ERROR** | Significant functional failures (e.g. database connection issues and 500 errors) |
+| **CRITICAL** | System-wide failures (e.g. server unable to start) |
+
 ---
 ## Testing & Coverage   
 
@@ -114,4 +104,5 @@ To run tests with coverage measurement, follow these steps:
   - Javi Gutierrez, Kyle Bluemel, Jake Michie and Osvaldo Saldana
 ---
 
-[Back to top](#top)
+[Back to top](#cs2450--task-manager)
+
