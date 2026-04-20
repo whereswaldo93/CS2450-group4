@@ -9,7 +9,7 @@ Centralises:
     appeared ~6 times across task_view.py.
 """
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from .models import Task
 
@@ -29,8 +29,6 @@ class TaskConfig:
     def __new__(cls) -> "TaskConfig":
         if cls._instance is None:
             instance = super().__new__(cls)
-            # Built once, never rebuilt — safe because Priority values are
-            # Django TextChoices constants that never change at runtime.
             instance._priority_order = {
                 Task.Priority.HIGH: 0,
                 Task.Priority.MEDIUM: 1,
@@ -59,3 +57,19 @@ class TaskConfig:
             f"A database error occurred while {action}. Please try again later.",
             status=500,
         )
+
+    @staticmethod
+    def db_json_error_response(action: str = "processing your request") -> JsonResponse:
+        """Return a consistent JSON 500 response for API/JSON endpoints.
+
+        Args:
+            action: Short description of the failing operation.
+
+        Returns:
+            A :class:`~django.http.JsonResponse` with status 500.
+        """
+        return JsonResponse(
+            {"error": f"A database error occurred while {action}. Please try again later."},
+            status=500,
+        )
+
