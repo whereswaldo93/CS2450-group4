@@ -164,7 +164,13 @@ LOGGING = {
             "handlers": ["console"],
             "level": "INFO",
         },
-        # Application-specific logger
+        # Application-specific logger — matches AppLogger._root_name ("todos")
+        "todos": {
+            "handlers": ["console"],
+            "level": "DEBUG" if DEBUG else "INFO",
+            "propagate": False,
+        },
+        # Legacy name kept so any residual "taskproject.*" calls still surface
         "taskproject": {
             "handlers": ["console"],
             "level": "DEBUG" if DEBUG else "INFO",
