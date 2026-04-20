@@ -1,9 +1,11 @@
 import os
 from django.apps import AppConfig
-import logging
 import atexit
 
-logger = logging.getLogger("todos")
+from todos.app_logger import AppLogger  # noqa: E402  (imported after AppConfig to avoid early Django setup)
+
+logger = AppLogger.get_logger(__name__)
+
 
 class TodosConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
