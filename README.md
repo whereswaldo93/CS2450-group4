@@ -7,9 +7,9 @@ A comprehensive task management solution tailored for the modern college student
 - [CS2450: Task Manager](#cs2450-task-manager)
   - [Table of Contents](#table-of-contents)
   - [Key Features](#key-features)
-  - [Logging \& Observability](#logging--observability)
   - [Running the Project](#running-the-project)
   - [Installation \& Setup](#installation--setup)
+  - [Logging \& Observability](#logging--observability)
   - [Testing \& Coverage](#testing--coverage)
   - [Dependencies](#dependencies)
   - [Group 4 Contributors](#group-4-contributors)
@@ -18,19 +18,6 @@ A comprehensive task management solution tailored for the modern college student
 - **Academic Tracking**: Organize tasks by priority, due date and status.
 - **Restful API**:  Powered by Django REST Framework for seamless integration.
 - **Structured Logging**: Meaningful traceability for debugging and maintenance.
-
-## Logging & Observability
-To ensure the application is maintainable and easy to debug, we using the following structured logging system.
-
-**Log Levels & Usage**
-
-| **Level** | **Usage Criteria** |
-| --------- | ------------------ |
-| **DEBUG** | Granular details for developers (e.g. raw API payloads and internal state)|
-| **INFO**  | Key lifecycle events (e.g. App startup, successful DB writes, and user actions) |
-| **WARNING** | Handled errors or unexpected behavior (e.g. failed logins and slow responses) |
-| **ERROR** | Significant functional failures (e.g. database connection issues and 500 errors) |
-| **CRITICAL** | System-wide failures (e.g. server unable to start) |
 
 ## Running the Project
 **Prerequisites**
@@ -60,6 +47,20 @@ cd task_manager_app/src/taskproject
 # Run a local server
 py manage.py runserver
 ```
+
+## Logging & Observability
+To ensure the application is maintainable and easy to debug, we using the following structured logging system.
+
+**Log Levels & Usage**
+
+| **Level** | **Usage Criteria** |
+| --------- | ------------------ |
+| **DEBUG** | Granular details for developers (e.g. raw API payloads and internal state)|
+| **INFO**  | Key lifecycle events (e.g. App startup, successful DB writes, and user actions) |
+| **WARNING** | Handled errors or unexpected behavior (e.g. failed logins and slow responses) |
+| **ERROR** | Significant functional failures (e.g. database connection issues and 500 errors) |
+| **CRITICAL** | System-wide failures (e.g. server unable to start) |
+
 ---
 ## Testing & Coverage   
 
