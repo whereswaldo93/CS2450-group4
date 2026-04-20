@@ -12,7 +12,7 @@ class TodosConfig(AppConfig):
     def ready(self):
         # Log a message when the app is ready to confirm it's loaded
         if not os.path.exists("db.sqlite3"):
-            logger.critical("Database not found! Please run 'python manage.py migrate' to set up the database.")
+            logger.critical("Database not found! Please run 'py manage.py migrate' to set up the database.")
         else:
             logger.info("Task Manager application startup initiated. Application is ready and loaded.")
 
