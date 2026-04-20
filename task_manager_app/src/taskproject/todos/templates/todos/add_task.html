@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Task</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { background-color: #f4f6f8; color: #222; padding: 40px 20px; }
+        .container { max-width: 560px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .header h1 { font-size: 1.75rem; }
+        .back-btn {
+            text-decoration: none;
+            background-color: #64748b;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        .back-btn:hover { opacity: 0.9; }
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #334155; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        .submit-btn {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .submit-btn:hover { background-color: #1d4ed8; }
+        .error { color: #dc2626; font-size: 0.9rem; margin-top: 4px; }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Add Task</h1>
+            <a href="{% url 'task_list' %}" class="back-btn">← Back to list</a>
+        </div>
+
+        <div class="form-card">
+            <form method="post" action="{% url 'add_task' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" name="title" required maxlength="200" value="{{ title }}"
+                           placeholder="What needs to be done?">
+                    {% if errors.title %}<p class="error">{{ errors.title }}</p>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Optional details">{{ description }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority">
+                        <option value="Low" {% if priority == 'Low' %}selected{% endif %}>Low</option>
+                        <option value="Medium" {% if priority == 'Medium' %}selected{% endif %}>Medium</option>
+                        <option value="High" {% if priority == 'High' %}selected{% endif %}>High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="due_date">Due date (optional)</label>
+                    <input type="date" id="due_date" name="due_date" value="{{ due_date }}" min="{% now 'Y-m-d' %}">
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes (optional)</label>
+                    <textarea id="notes" name="notes" placeholder="Additional notes">{{ notes }}</textarea>
+                </div>
+                <button type="submit" class="submit-btn">Add Task</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
