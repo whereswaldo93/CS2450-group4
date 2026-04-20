@@ -103,4 +103,5 @@ To run tests with coverage measurement, follow these steps:
   - Javi Gutierrez, Kyle Bluemel, Jake Michie and Osvaldo Saldana
 ---
 
-[Back to top](#CS2450:-Task-Manager)
+[Back to top](#cs2450--task-manager)
+
