@@ -1,5 +1,5 @@
 # CS2450: Task Manager
-A comprehensive task management solution tailored for modern the college student. This application bridges the gap between academic deadlines, personal wellness, and professional growth in one unified dashboard.
+A comprehensive task management solution tailored for the modern college student. This application bridges the gap between academic deadlines, personal wellness, and professional growth in one unified dashboard.
 
 ![Dashboard Preview](./task_manager_app/docs/images/dashboard.png)
 
@@ -8,7 +8,6 @@ A comprehensive task management solution tailored for modern the college student
   - [Table of Contents](#table-of-contents)
   - [Key Features](#key-features)
   - [Logging \& Observability](#logging--observability)
-  - [Best Practices](#best-practices)
   - [Running the Project](#running-the-project)
   - [Installation \& Setup](#installation--setup)
   - [Testing \& Coverage](#testing--coverage)
@@ -33,16 +32,6 @@ To ensure the application is maintainable and easy to debug, we using the follow
 | **ERROR** | Significant functional failures (e.g. database connection issues and 500 errors) |
 | **CRITICAL** | System-wide failures (e.g. server unable to start) |
 
-## Best Practices
-When adding logs to the project, import the standard logger and use the `extra` parameter to provide searchable context:
-```python
-import logging
-logger = logging.getLogger('task_manager')
-
-# Example: Logging a state change
-logger.info("Task status updated", extra={'task_id': 42, 'new_status': 'Completed'})
-```
----
 ## Running the Project
 **Prerequisites**
 
@@ -114,4 +103,4 @@ To run tests with coverage measurement, follow these steps:
   - Javi Gutierrez, Kyle Bluemel, Jake Michie and Osvaldo Saldana
 ---
 
-[Back to top](#top)
+[Back to top](#readme)
