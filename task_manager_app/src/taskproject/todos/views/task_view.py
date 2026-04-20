@@ -287,10 +287,7 @@ def task_stats(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"total": total, "pending": pending, "completed": completed})
     except Exception as e:
         logger.error("Failed to retrieve task stats for user %s: %s", request.user.id, str(e), exc_info=True)
-        return JsonResponse(
-            {"error": "A database error occurred while retrieving task stats. Please try again later."},
-            status=500,
-        )
+        return _cfg.db_json_error_response("retrieving task stats")
 
 
 @login_required
