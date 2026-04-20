@@ -3,11 +3,11 @@ from django.apps import AppConfig
 import logging
 import atexit
 
-logger = logging.getLogger("taskproject.todos")
+logger = logging.getLogger("todos")
 
 class TodosConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "taskproject.todos"
+    name = "todos"
 
     def ready(self):
         # Log a message when the app is ready to confirm it's loaded

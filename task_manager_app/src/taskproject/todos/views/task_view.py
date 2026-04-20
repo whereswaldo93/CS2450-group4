@@ -7,7 +7,7 @@ from django.views.decorators.http import require_http_methods
 from ..models import Task
 import logging
 
-logger = logging.getLogger("taskproject.todos")
+logger = logging.getLogger("todos")
 
 def _count_overdue(tasks: list) -> int:
     """Count overdue tasks for the todo app.
