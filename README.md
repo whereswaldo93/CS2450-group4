@@ -7,7 +7,7 @@ A comprehensive task management solution tailored for the modern college student
 - [CS2450: Task Manager](#cs2450-task-manager)
   - [Table of Contents](#table-of-contents)
   - [Key Features](#key-features)
-  - [Running the Project](#running-the-project)
+  - [Getting Started](#running-the-project)
   - [Installation \& Setup](#installation--setup)
   - [Logging \& Observability](#logging--observability)
   - [Testing \& Coverage](#testing--coverage)
@@ -19,7 +19,7 @@ A comprehensive task management solution tailored for the modern college student
 - **Restful API**:  Powered by Django REST Framework for seamless integration.
 - **Structured Logging**: Meaningful traceability for debugging and maintenance.
 
-## Running the Project
+## Getting Started
 **Prerequisites**
 
 - **Python**: 3.8 or higher.
