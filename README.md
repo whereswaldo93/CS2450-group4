@@ -7,7 +7,7 @@ A comprehensive task management solution tailored for the modern college student
 - [CS2450: Task Manager](#cs2450-task-manager)
   - [Table of Contents](#table-of-contents)
   - [Key Features](#key-features)
-  - [Getting Started](#running-the-project)
+  - [Getting Started](#getting-started)
   - [Installation \& Setup](#installation--setup)
   - [Logging \& Observability](#logging--observability)
   - [Testing \& Coverage](#testing--coverage)
