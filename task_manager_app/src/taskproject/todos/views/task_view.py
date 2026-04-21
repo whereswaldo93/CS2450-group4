@@ -20,9 +20,6 @@ def _count_overdue(tasks: list) -> int:
     """
     today = date.today()
 
-    # Log the date we are comparing against
-    logger.debug("Checking for overdue tasks relative to today's date %s", today)
-
     n = 0
     for t in tasks:
         if t.status != Task.Status.PENDING or not t.due_date:
@@ -30,11 +27,7 @@ def _count_overdue(tasks: list) -> int:
         if t.due_date < today:
             n += 1
 
-    # Helps verify if the overdue logic is filtering correctly
-    logger.debug("Found %s overdue tasks out of %s total", n, len(tasks))
-
     return n
-
 
 def _summary_stats(tasks: list) -> dict:
     """Summary stats for the todo app.
@@ -45,8 +38,6 @@ def _summary_stats(tasks: list) -> dict:
     Returns:
         dict: The summary stats object.
     """
-    # Log the input size
-    logger.debug("Summary of stats is %s tasks", len(tasks))
 
     stats = {
         "total": len(tasks),
@@ -72,9 +63,6 @@ def task_list_page_context(
     Returns:
         dict[str, Any | list[Task] | int | str | None]: The context object.
     """
-
-    # Log the database query for task list retrieval
-    logger.debug("Querying database for task list for user %s", request.user.id)
 
     qs = Task.objects.filter(user=request.user)  # pylint: disable=no-member
     tasks = list(qs)
@@ -154,8 +142,6 @@ def task_list(request: HttpRequest) -> HttpResponse:
         HttpResponse: The response object.
     """
 
-    # Log the access to the task list page
-    logger.debug("User %s accessing task list page", request.user.id)
     return render(request, "todos/tasks_list.html", task_list_page_context(request))
 
 @login_required
@@ -553,7 +539,7 @@ def task_stats(request: HttpRequest) -> JsonResponse:
     """
 
     # Log the access to the stats endpoint
-    logger.debug("User %s accessing task stats endpoint", request.user.id)
+    # logger.debug("User %s accessing task stats endpoint", request.user.id)
 
     try:
         # Log the database query for stats retrieval
