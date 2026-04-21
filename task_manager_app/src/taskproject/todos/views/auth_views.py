@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-import logging
+from ..app_logger import AppLogger  # Smell #5 fix: singleton logger
 from rest_framework import viewsets
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
-logger = logging.getLogger("taskproject.todos")
+logger = AppLogger.get_logger(__name__)
 
 if TYPE_CHECKING:
     from django.contrib.auth.base_user import AbstractBaseUser

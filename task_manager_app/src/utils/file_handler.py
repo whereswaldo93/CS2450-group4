@@ -28,3 +28,9 @@ class TaskFileRepo:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with open(self.path, "w", encoding="utf-8") as f:
             json.dump([task.to_dict() for task in tasks], f, indent=2)
+
+# ---------------------------------------------------------------------------
+# Smell #4 fix: enforce singleton — import and re-export the singleton class
+# so existing callers can switch to TaskFileRepoSingleton with minimal churn.
+# ---------------------------------------------------------------------------
+from utils.task_file_repo_singleton import TaskFileRepoSingleton  # noqa: E402
