@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
-logger = logging.getLogger("taskproject.todos")
+logger = logging.getLogger("taskproject")
 
 if TYPE_CHECKING:
     from django.contrib.auth.base_user import AbstractBaseUser
