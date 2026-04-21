@@ -61,7 +61,6 @@ To ensure the application is maintainable and easy to debug, we using the follow
 | **ERROR** | Significant functional failures (e.g. database connection issues and 500 errors) |
 | **CRITICAL** | System-wide failures (e.g. server unable to start) |
 
----
 ## Testing & Coverage   
 
 **Running Unit Tests**
@@ -73,25 +72,21 @@ To ensure the application is maintainable and easy to debug, we using the follow
 
 **Running Coverage Tests**
 
-To run tests with coverage measurement, follow these steps:
-
-1. **Install the `coverage` package if not already installed**:
+Install the `coverage` package if not already installed:
 ```bash
    pip install coverage
 ```
    
-2. **Run tests with coverage**:
 ```bash
-   coverage run -m unittest discover -s task_manager_app/tests -p "*.py"
+cd task_manager_app
+python3 -m pytest tests/test_django_views.py tests/test_task.py tests/test_views.py \
+  --cov=src/taskproject/todos \
+  --cov=src/taskproject/core \
+  --cov-report=html:docs/tests/htmlcov \
+  --cov-report=term-missing
 ```
 
-3. **Generate a coverage report**:
-`coverage report`
-
-4. **Generate an HTML report for detailed coverage**:
-`coverage html`
-
----
+Open `docs/tests/htmlcov/index.html` in a browser to view the interactive HTML report.
 
 ## Dependencies
 - **Django**: `Django>=5.0,<6.1`
@@ -102,7 +97,5 @@ To run tests with coverage measurement, follow these steps:
 
 ## Group 4 Contributors
   - Javi Gutierrez, Kyle Bluemel, Jake Michie and Osvaldo Saldana
----
 
 [Back to top](#cs2450--task-manager)
-
