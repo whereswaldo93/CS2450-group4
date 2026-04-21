@@ -28,12 +28,13 @@ if str(SRC_DIR) not in sys.path:
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# Keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY:
+    logging.critical("SECRET_KEY is not set! Please add it to your .env file. Application startup failed.")
     raise ValueError("SECRET_KEY is not set. Add it to your .env file.")
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # Allow all hosts in development, but restrict in production via .env configuration.
