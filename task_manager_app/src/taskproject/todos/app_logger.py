@@ -20,7 +20,7 @@ class AppLogger:
     """
 
     _instance: "AppLogger | None" = None
-    _root_name: str = "todos"
+    _root_name: str = "taskproject"
 
     def __new__(cls) -> "AppLogger":
         if cls._instance is None:
