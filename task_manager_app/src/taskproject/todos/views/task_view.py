@@ -1,69 +1,49 @@
-from datetime import datetime, date
+from datetime import date
 from typing import Any
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 from ..models import Task
-import logging
+from ..app_logger import AppLogger          # Smell #5 fix: singleton logger
+from ..task_config import TaskConfig        # Smell #1 & #3 fix: singleton config
+from ..date_parser import DateParser        # Smell #2 fix: singleton date parser
 
-logger = logging.getLogger("taskproject")
+# Obtain module logger through the singleton — consistent naming guaranteed.
+logger = AppLogger.get_logger(__name__)
+
+# Singleton accessors (one instance shared across the entire process).
+_cfg = TaskConfig()
+_date_parser = DateParser()
+
 
 def _count_overdue(tasks: list) -> int:
-    """Count overdue tasks for the todo app.
-
-    Args:
-        tasks (list): The list of tasks.
-
-    Returns:
-        int: The number of overdue tasks.
-    """
     today = date.today()
-
+    logger.debug("Checking for overdue tasks relative to today's date %s", today)
     n = 0
     for t in tasks:
         if t.status != Task.Status.PENDING or not t.due_date:
             continue
         if t.due_date < today:
             n += 1
-
+    logger.debug("Found %s overdue tasks out of %s total", n, len(tasks))
     return n
 
+
 def _summary_stats(tasks: list) -> dict:
-    """Summary stats for the todo app.
-
-    Args:
-        tasks (list): The list of tasks.
-
-    Returns:
-        dict: The summary stats object.
-    """
-
+    logger.debug("Summary of stats is %s tasks", len(tasks))
     stats = {
         "total": len(tasks),
         "pending": sum(1 for t in tasks if t.status == Task.Status.PENDING),
         "completed": sum(1 for t in tasks if t.status == Task.Status.COMPLETED),
         "overdue": _count_overdue(tasks),
     }
-
-    # Log the result
     logger.debug("Stats calculated: %s", stats)
-
     return stats
 
 
-def task_list_page_context(
-    request: HttpRequest,
-) -> dict[str, Any | list[Task] | int | str | None]:
-    """Task list page context for the todo app.
-
-    Args:
-        request (HttpRequest): The request object.
-
-    Returns:
-        dict[str, Any | list[Task] | int | str | None]: The context object.
-    """
-
+def task_list_page_context(request: HttpRequest) -> dict[str, Any | list[Task] | int | str | None]:
+    logger.debug("Querying database for task list for user %s", request.user.id)
     qs = Task.objects.filter(user=request.user)  # pylint: disable=no-member
     tasks = list(qs)
     stats = _summary_stats(tasks)
@@ -83,26 +63,18 @@ def task_list_page_context(
     elif filter_priority == "High":
         tasks = [t for t in tasks if t.priority == Task.Priority.HIGH]
 
-    # Log the applied filters for task list retrieval
-    logger.debug("Applied filters for task list retrieval for user %s: status=%s, priority=%s",
-        request.user.id,
-        filter_status,
-        filter_priority
+    logger.debug(
+        "Applied filters for task list retrieval for user %s: status=%s, priority=%s",
+        request.user.id, filter_status, filter_priority,
     )
 
     sort_by = request.GET.get("sort", "id")
-    priority_order = {
-        Task.Priority.HIGH: 0,
-        Task.Priority.MEDIUM: 1,
-        Task.Priority.LOW: 2,
-    }
 
+    # Smell #1 fix: use the singleton PRIORITY_ORDER instead of an inline dict.
     if sort_by == "priority":
-        tasks = sorted(tasks, key=lambda t: priority_order.get(t.priority, 99))
+        tasks = sorted(tasks, key=lambda t: _cfg.PRIORITY_ORDER.get(t.priority, 99))
     elif sort_by == "due_date":
-        tasks = sorted(
-            tasks, key=lambda t: (t.due_date is None, t.due_date or date.min)
-        )
+        tasks = sorted(tasks, key=lambda t: (t.due_date is None, t.due_date or date.min))
     elif sort_by == "title":
         tasks = sorted(tasks, key=lambda t: t.title.lower())
     else:
@@ -116,50 +88,24 @@ def task_list_page_context(
         **stats,
     }
 
+
 @login_required
 def hello_html_view(request: HttpRequest) -> HttpResponse:
-    """Hello HTML view for the todo app.
-
-    Args:
-        request (AuthHttpRequest): The request object.
-
-    Returns:
-        HttpResponse: The response object.
-    """
-
-    # Log the access to the hello page
     logger.debug("User %s accessing hello page", request.user.id)
     return render(request, "todos/hello.html", task_list_page_context(request))
 
+
 @login_required
 def task_list(request: HttpRequest) -> HttpResponse:
-    """Task list view for the todo app.
-
-    Args:
-        request (AuthHttpRequest): The request object.
-
-    Returns:
-        HttpResponse: The response object.
-    """
-
+    logger.debug("User %s accessing task list page", request.user.id)
     return render(request, "todos/tasks_list.html", task_list_page_context(request))
+
 
 @login_required
 def add_task(request: HttpRequest) -> HttpResponse:
-    """Add task view for the todo app.
-
-    Args:
-        request (AuthHttpRequest): The request object.
-
-    Returns:
-        HttpResponse: The response object.
-    """
-    # Log the start of the add task process
     logger.debug("User %s accessing add task page", request.user.id)
 
     if request.method == "POST":
-
-        #DEBUG: Log the form submission
         logger.debug("POST data received for new task: %s", request.POST.dict())
 
         title = (request.POST.get("title") or "").strip()
@@ -172,46 +118,26 @@ def add_task(request: HttpRequest) -> HttpResponse:
         if not title:
             errors["title"] = "Title is required."
 
-        due_date = None
-        if due_date_raw:
-            try:
-                due_date = datetime.strptime(due_date_raw, "%Y-%m-%d").date()
-            except ValueError:
-                # Log validation failures such as User error/Unexpected conditons
-                logger.warning(
-                    "Invalid date format submitted: %s",
-                    due_date_raw,
-                )
-                errors["due_date"] = "Invalid date format. Use YYYY-MM-DD."
-
-            if due_date is not None and due_date < date.today():
-                # Log validation failures such as User error/Unexpected conditons
-                logger.warning(
-                    "Attempted to submit due date in the past: %s",
-                    due_date,
-                )
-                errors["due_date"] = "Due date cannot be in the past."
+        # Smell #2 fix: delegate date parsing to the singleton DateParser.
+        due_date, date_error = _date_parser.parse(due_date_raw)
+        if date_error:
+            logger.warning("Invalid date format submitted: %s", due_date_raw)
+            errors["due_date"] = date_error
+        elif due_date is not None and due_date < date.today():
+            logger.warning("Attempted to submit due date in the past: %s", due_date)
+            errors["due_date"] = "Due date cannot be in the past."
 
         if errors:
-            # Log validation failures such as User error/Unexpected conditons
-            logger.warning(
-                "Task creation validation failed for user %s: %s", 
-                request.user.id, 
-                errors
-            )
-            return render(
-                request,
-                "todos/add_task.html",
-                {
-                    "errors": errors,
-                    "title": request.POST.get("title"),
-                    "description": request.POST.get("description"),
-                    "priority": priority,
-                    "due_date": request.POST.get("due_date"),
-                    "notes": notes,
-                },
-            )
-        #STATE CHANGE: Logging a new database record creation
+            logger.warning("Task creation validation failed for user %s: %s", request.user.id, errors)
+            return render(request, "todos/add_task.html", {
+                "errors": errors,
+                "title": request.POST.get("title"),
+                "description": request.POST.get("description"),
+                "priority": priority,
+                "due_date": request.POST.get("due_date"),
+                "notes": notes,
+            })
+
         try:
             task = Task.objects.create(  # pylint: disable=no-member
                 user=request.user,
@@ -222,109 +148,43 @@ def add_task(request: HttpRequest) -> HttpResponse:
                 status=Task.Status.PENDING,
                 notes=notes,
             )
-            # Log successful task creation and DB record change
-            logger.info(
-                "Task '%s' with ID %d, created successfully for user %s",
-                task.title,
-                task.id,
-                request.user.id
-            )
+            logger.info("Task '%s' with ID %d, created successfully for user %s", task.title, task.id, request.user.id)
             return redirect("task_list")
-        
         except Exception as e:
-            # Log unexpected system failure during task creation to DB
-            logger.error(
-                "System failure during task creation for user %s: %s",
-                request.user.id,
-                str(e),
-                exc_info=True
-            )
-            return HttpResponse("A database error occurred while creating the task. Please try again later.", status=500)
+            logger.error("System failure during task creation for user %s: %s", request.user.id, str(e), exc_info=True)
+            # Smell #3 fix: use the singleton helper instead of a raw HttpResponse literal.
+            return _cfg.db_error_response("creating the task")
 
-    return render(
-        request,
-        "todos/add_task.html",
-        {
-            "errors": {},
-            "title": "",
-            "description": "",
-            "priority": "Medium",
-            "due_date": "",
-            "notes": "",
-        },
-    )
+    return render(request, "todos/add_task.html", {
+        "errors": {}, "title": "", "description": "", "priority": "Medium", "due_date": "", "notes": "",
+    })
+
 
 @login_required
 @require_http_methods(["POST"])
 def toggle_task(request: HttpRequest, task_id: int) -> HttpResponse:
-    """Toggle task view for the todo app.
-
-    Args:
-        request (AuthHttpRequest): The request object.
-        task_id (int): The task ID.
-
-    Returns:
-        HttpResponse: The response object.
-    """
-
-    # Log the start of the toggle process
-    logger.debug("Toggle request received for task id %s by user %s", 
-        task_id, 
-        request.user.id,
-    )
-
+    logger.debug("Toggle request received for task id %s by user %s", task_id, request.user.id)
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     old_status = task.status
 
-    if task.status == Task.Status.PENDING:
-        task.status = Task.Status.COMPLETED
-    else:
-        task.status = Task.Status.PENDING
+    task.status = Task.Status.COMPLETED if task.status == Task.Status.PENDING else Task.Status.PENDING
 
-    try:    
+    try:
         task.save(update_fields=["status"])
-
-        # Log status change success
-        logger.info(
-            "Task %s status changed from %s to %s by user %s",
-            task.id,
-            old_status,
-            task.status,
-            request.user.id
-        )
+        logger.info("Task %s status changed from %s to %s by user %s", task.id, old_status, task.status, request.user.id)
         return redirect("task_list")
-    
     except Exception as e:
-        # Unexpected system failure during task status update to DB
-        logger.error(
-            "Failed to toggle status for task %s:: %s",
-            task_id,
-            str(e),
-            exc_info=True
-        )
-        return HttpResponse("A database error occurred while updating the task status. Please try again later.", status=500)
+        logger.error("Failed to toggle status for task %s:: %s", task_id, str(e), exc_info=True)
+        # Smell #3 fix: use the singleton helper.
+        return _cfg.db_error_response("updating the task status")
+
 
 @login_required
 def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
-    """Edit task view for the todo app.
-
-    Args:
-        request (AuthHttpRequest): The request object.
-        task_id (int): The task ID.
-
-    Returns:
-        HttpResponse: The response object.
-    """
-    # Log the start of the edit process
-    logger.debug("User %s attempting to edit task %s",
-        request.user.id,
-            task_id
-    )
-
+    logger.debug("User %s attempting to edit task %s", request.user.id, task_id)
     task = get_object_or_404(Task, pk=task_id, user=request.user)
 
     if request.method == "POST":
-        #Log the form submission
         logger.debug("POST data received for task %s: %s", task_id, request.POST.dict())
 
         title = (request.POST.get("title") or "").strip()
@@ -338,55 +198,22 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
             errors["title"] = "Title is required."
 
         if errors:
-            # Log validation failures such as User error/Unexpected conditons
-            logger.warning(
-                "Task update validation failed for task %s by user %s: %s",
-                task_id,
-                request.user.id,
-                errors
-            )
+            logger.warning("Task update validation failed for task %s by user %s: %s", task_id, request.user.id, errors)
+            return render(request, "todos/edit_task.html", {
+                "errors": errors, "task": task, "title": title,
+                "description": description, "priority": priority, "due_date": due_date_str, "notes": notes,
+            })
 
-            return render(
-                request,
-                "todos/edit_task.html",
-                {
-                    "errors": errors,
-                    "task": task,
-                    "title": title,
-                    "description": description,
-                    "priority": priority,
-                    "due_date": due_date_str,
-                    "notes": notes,
-                },
-            )
+        # Smell #2 fix: delegate date parsing to the singleton DateParser.
+        due_date, date_error = _date_parser.parse(due_date_str)
+        if date_error:
+            logger.warning("Invalid due date format for task %s: %s", task_id, due_date_str)
+            errors["due_date"] = date_error
+            return render(request, "todos/edit_task.html", {
+                "errors": errors, "task": task, "title": title,
+                "description": description, "priority": priority, "due_date": due_date_str, "notes": notes,
+            })
 
-        due_date = None
-        if due_date_str:
-            try:
-                due_date = datetime.strptime(due_date_str, "%Y-%m-%d").date()
-            except ValueError:
-                # Log validation failures such as User error/Unexpected conditons
-                logger.warning(
-                    "Invalid due date format for task %s: %s",
-                    task_id,
-                    due_date_str,
-                )
-                errors["due_date"] = "Invalid date format. Use YYYY-MM-DD."
-                return render(
-                    request,
-                    "todos/edit_task.html",
-                    {
-                        "errors": errors,
-                        "task": task,
-                        "title": title,
-                        "description": description,
-                        "priority": priority,
-                        "due_date": due_date_str,
-                        "notes": notes,
-                    },
-                )
-
-        #STATE CHANGE: Logging a database record update
         try:
             task.title = title
             task.description = description
@@ -394,252 +221,94 @@ def edit_task(request: HttpRequest, task_id: int) -> HttpResponse:
             task.due_date = due_date
             task.notes = notes
             task.save()
-
-            # Log successful task update and DB record change
-            logger.info(
-                "Task %s ('%s') successfully updated by user %s",
-                task.id,
-                task.title,
-                request.user.id
-            )
+            logger.info("Task %s ('%s') successfully updated by user %s", task.id, task.title, request.user.id)
             return redirect("task_list")
-
         except Exception as e:
-            # Log unexpected system failure during task update to DB
-            logger.error(
-                "Failed to update task %s in database: %s",
-                task_id,
-                str(e)
-            )
-            return HttpResponse("A database error occurred while updating the task. Please try again later.", status=500)
+            logger.error("Failed to update task %s in database: %s", task_id, str(e))
+            # Smell #3 fix: use the singleton helper.
+            return _cfg.db_error_response("updating the task")
 
-    return render(
-        request,
-        "todos/edit_task.html",
-        {
-            "errors": {},
-            "task": task,
-            "title": task.title,
-            "description": task.description,
-            "priority": task.priority,
-            "due_date": task.due_date.isoformat() if task.due_date else "",
-            "notes": task.notes or "",
-        },
-    )
+    return render(request, "todos/edit_task.html", {
+        "errors": {}, "task": task, "title": task.title, "description": task.description,
+        "priority": task.priority, "due_date": task.due_date.isoformat() if task.due_date else "",
+        "notes": task.notes or "",
+    })
+
 
 @login_required
 def delete_task(request: HttpRequest, task_id: int) -> HttpResponse:
-    """Delete task view for the todo app.
-
-    Args:
-        request (AuthHttpRequest): The request object.
-        task_id (int): The task ID.
-
-    Returns:
-        HttpResponse: The response object.
-    """
-
-    # Log the start of the delete process
-    logger.debug("User %s attempting to delete task %s",
-        request.user.id,
-        task_id
-    )
-
+    logger.debug("User %s attempting to delete task %s", request.user.id, task_id)
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     task_title = task.title
 
     try:
         task.delete()
-
-        # Log task deletion
-        logger.info(
-            "Tasks %s with ID %s deleted by user %s",
-            task_title,
-            task_id,
-            request.user.id
-        )
+        logger.info("Tasks %s with ID %s deleted by user %s", task_title, task_id, request.user.id)
         return redirect("task_list")
-
     except Exception as e:
-        # Log unexpected system failure during task deletion from DB
         logger.error(
-            "Failed to delete task %s with ID %s for user %s with the following error: %s", 
-            task_title,
-            task_id,
-            request.user.id,
-            str(e),
-            exc_info=True
+            "Failed to delete task %s with ID %s for user %s with the following error: %s",
+            task_title, task_id, request.user.id, str(e), exc_info=True,
         )
-        return HttpResponse("A database error occurred while deleting the task. Please try again later.", status=500)
+        # Smell #3 fix: use the singleton helper.
+        return _cfg.db_error_response("deleting the task")
 
 
 @login_required
 def complete_task(request: HttpRequest, task_id: int) -> HttpResponse:
-    """Complete task view for the todo app.
-
-    Args:
-        request (AuthHttpRequest): The request object.
-        task_id (int): The task ID.
-
-    Returns:
-        HttpResponse: The response object.
-    """
-
-    # Log the start of the complete process
-    logger.debug("User %s attempting to mark task %s as completed",
-        request.user.id,
-        task_id
-    )
-
+    logger.debug("User %s attempting to mark task %s as completed", request.user.id, task_id)
     task = get_object_or_404(Task, pk=task_id, user=request.user)
 
     if task.status == Task.Status.COMPLETED:
-        # Log attempt to complete an already completed task
-        logger.warning(
-            "User %s attempted to mark task %s as completed, but it is already completed.",
-            request.user.id,
-            task_id
-        )
+        logger.warning("User %s attempted to mark task %s as completed, but it is already completed.", request.user.id, task_id)
         return redirect("task_list")
-    
+
     try:
         task.status = Task.Status.COMPLETED
         task.save(update_fields=["status"])
-
-        # Log status change success
-        logger.info(
-            "Task %s with ID %s marked as completed by user %s",
-            task.id,
-            task.title,
-            request.user.id
-        )
+        logger.info("Task %s with ID %s marked as completed by user %s", task.id, task.title, request.user.id)
         return redirect("task_list")
-    
     except Exception as e:
-        # Log unexpected system failure during task status update to DB
-        logger.error(
-            "Failed to mark task %s with ID %s as completed for user %s: %s",
-            task.title,
-            task_id,
-            request.user.id,
-            str(e),
-            exc_info=True
-        )
-        return HttpResponse("A database error occurred while updating the task status. Please try again later.", status=500)
+        logger.error("Failed to mark task %s with ID %s as completed for user %s: %s", task.title, task_id, request.user.id, str(e), exc_info=True)
+        # Smell #3 fix: use the singleton helper.
+        return _cfg.db_error_response("updating the task status")
+
 
 @login_required
 def task_stats(request: HttpRequest) -> JsonResponse:
-    """Task stats view for the todo app.
-
-    Args:
-        request (AuthHttpRequest): The request object.
-
-    Returns:
-        JsonResponse: The JSON response object.
-    """
-
-    # Log the access to the stats endpoint
-    # logger.debug("User %s accessing task stats endpoint", request.user.id)
+    logger.debug("User %s accessing task stats endpoint", request.user.id)
 
     try:
-        # Log the database query for stats retrieval
-        tasks = list(
-            Task.objects.filter(user=request.user).order_by("-id")  # pylint: disable=no-member
-        )
-
+        tasks = list(Task.objects.filter(user=request.user).order_by("-id"))  # pylint: disable=no-member
         total = len(tasks)
         pending = sum(1 for t in tasks if t.status == Task.Status.PENDING)
         completed = sum(1 for t in tasks if t.status == Task.Status.COMPLETED)
-
-        # Log the successful retrieval of stats
-        logger.info(
-            "Task stats retrieved successfully for user %s: total=%d, pending=%d, completed=%d",
-            request.user.id,
-            total,
-            pending,
-            completed
-        )
-
-        return JsonResponse(
-            {
-                "total": total,
-                "pending": pending,
-                "completed": completed,
-            }
-        )
+        logger.info("Task stats retrieved successfully for user %s: total=%d, pending=%d, completed=%d", request.user.id, total, pending, completed)
+        return JsonResponse({"total": total, "pending": pending, "completed": completed})
     except Exception as e:
-        # Log unexpected system failure during stats retrieval from DB
-        logger.error(
-            "Failed to retrieve task stats for user %s: %s",
-            request.user.id,
-            str(e),
-            exc_info=True
-        )
-        return JsonResponse(
-            {"A database error occurred while retrieving task stats. Please try again later."},
-            status=500
-        )
+        logger.error("Failed to retrieve task stats for user %s: %s", request.user.id, str(e), exc_info=True)
+        return _cfg.db_json_error_response("retrieving task stats")
+
 
 @login_required
 def note_create(request: HttpRequest, task_id: int) -> HttpResponse:
-    """Note create view for the todo app.
-
-    Args:
-        request (AuthHttpRequest): The request object.
-        task_id (int): The task ID.
-
-    Returns:
-        HttpResponse: The response object.
-    """
-
-    # Log the access to the note creation endpoint
-    logger.debug("User %s accessing note creation for task %s", 
-        request.user.id, 
-        task_id
-    )
-
+    logger.debug("User %s accessing note creation for task %s", request.user.id, task_id)
     task = get_object_or_404(Task, pk=task_id, user=request.user)
 
     if request.method == "POST":
-        # Log the raw payload submission for note creation
-        logger.debug("POST data received for note creation for task %s: %s",
-            task_id,
-            request.POST.dict()
-        )
-
-        notes = request.POST.get("notes", "").strip() 
+        logger.debug("POST data received for note creation for task %s: %s", task_id, request.POST.dict())
+        notes = request.POST.get("notes", "").strip()
 
         if notes:
-            # Logging a database record update for task notes
             try:
                 task.notes = notes
                 task.save(update_fields=["notes"])
-
-                # Log successful note creation and DB record change
-                logger.info(
-                    "Note for task %s with ID %s updated successfully by user %s",
-                    task.title,
-                    task_id,
-                    request.user.id
-                )
+                logger.info("Note for task %s with ID %s updated successfully by user %s", task.title, task_id, request.user.id)
                 return redirect("task_list")
-            
             except Exception as e:
-                # Log unexpected system failure during note update to DB
-                logger.error(
-                    "Database failure while saving note for task %s with ID %s for user %s: %s",
-                    task.title,
-                    task_id,
-                    request.user.id,
-                    str(e),
-                    exc_info=True
-                )
-                return HttpResponse("A database error occurred while creating the note. Please try again later.", status=500)
-        # Log if note content is empty and note creation is skipped
-        logger.debug(
-            "Empty note content submitted for task %s with ID %s by user %s.",
-            task.title,
-            task_id,
-            request.user.id
-        )
+                logger.error("Database failure while saving note for task %s with ID %s for user %s: %s", task.title, task_id, request.user.id, str(e), exc_info=True)
+                # Smell #3 fix: use the singleton helper.
+                return _cfg.db_error_response("creating the note")
+        logger.debug("Empty note content submitted for task %s with ID %s by user %s.", task.title, task_id, request.user.id)
+
     return render(request, "todos/note_list.html", {"task": task})
